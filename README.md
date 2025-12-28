@@ -10,11 +10,15 @@ A fully customized status line for Claude Code featuring:
 
 ## Installation
 
+> **📖 Full Installation Guide**: See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed installation instructions, troubleshooting, and platform-specific notes.
+
 ### Quick Install
 
 Run the installation script from the repository root:
 
 ```bash
+git clone https://github.com/ssenart/oh-my-claude.git
+cd oh-my-claude
 bash install.sh
 ```
 

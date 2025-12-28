@@ -6,12 +6,14 @@ Complete guide to the custom Claude Code status line implementation.
 
 | File | Purpose | Best For |
 |------|---------|----------|
-| **../README.md** | Overview and getting started | First-time setup, quick reference |
+| **../README.md** | Overview and getting started | Quick start, project overview |
+| **INSTALLATION.md** | Complete installation guide | Detailed setup, troubleshooting install issues |
+| **PRO-USAGE-SETUP.md** | Pro usage tracking setup | Setting up Claude Pro usage monitoring |
 | **STATUS_LINE_QUICK_REFERENCE.md** | Common operations | Day-to-day usage, quick commands |
 | **STATUS_LINE_DOCUMENTATION.md** | Complete technical reference | Deep customization, understanding internals |
 | **EXAMPLES.md** | Visual examples of all states | Understanding what you're seeing |
+| **CLAUDE.md** | Architecture guide | Understanding the codebase structure |
 | **../CHANGELOG.md** | Version history and changes | Tracking what's been implemented |
-| **../CLAUDE.md** | Guide for Claude Code instances | Understanding the architecture |
 | **INDEX.md** | This file - documentation map | Finding the right document |
 
 ## File Structure
@@ -30,9 +32,10 @@ Complete guide to the custom Claude Code status line implementation.
 ## What to Read When
 
 ### 🚀 Just Getting Started
-1. **../README.md** - Understand what you have
-2. **docs/PRO-USAGE-SETUP.md** - Set up Pro usage tracking (optional)
-3. Test with command from **STATUS_LINE_QUICK_REFERENCE.md**
+1. **../README.md** - Quick overview and quick install
+2. **INSTALLATION.md** - Detailed installation instructions and troubleshooting
+3. **PRO-USAGE-SETUP.md** - Set up Pro usage tracking (optional)
+4. Test with command from **STATUS_LINE_QUICK_REFERENCE.md**
 
 ### 🔧 Want to Customize
 1. **STATUS_LINE_QUICK_REFERENCE.md** - Common customizations
@@ -40,9 +43,11 @@ Complete guide to the custom Claude Code status line implementation.
 3. **EXAMPLES.md** - See what's possible
 
 ### 🐛 Troubleshooting
-1. **STATUS_LINE_QUICK_REFERENCE.md** - Common fixes
-2. **STATUS_LINE_DOCUMENTATION.md** - Detailed troubleshooting
-3. **EXAMPLES.md** - Verify expected output
+1. **INSTALLATION.md** - Installation issues and fixes
+2. **STATUS_LINE_QUICK_REFERENCE.md** - Common operation fixes
+3. **STATUS_LINE_DOCUMENTATION.md** - Detailed troubleshooting
+4. **PRO-USAGE-SETUP.md** - Pro usage specific issues
+5. **EXAMPLES.md** - Verify expected output
 
 ### 📚 Understanding the System
 1. **STATUS_LINE_DOCUMENTATION.md** - How everything works
@@ -52,7 +57,9 @@ Complete guide to the custom Claude Code status line implementation.
 ## Key Sections by Topic
 
 ### Configuration
+- **Installation**: INSTALLATION.md, ../README.md
 - **Pro usage setup**: PRO-USAGE-SETUP.md
+- **Credentials setup**: INSTALLATION.md, PRO-USAGE-SETUP.md
 - **Changing colors**: STATUS_LINE_QUICK_REFERENCE.md, STATUS_LINE_DOCUMENTATION.md
 - **Segment order**: STATUS_LINE_QUICK_REFERENCE.md
 - **Cache timeout**: STATUS_LINE_QUICK_REFERENCE.md
