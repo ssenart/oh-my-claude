@@ -8,7 +8,7 @@ This is a custom status line implementation for Claude Code featuring real-time 
 
 ## Core Architecture
 
-### Three-Script System
+### Multi-Script System
 
 1. **statusline.sh** - Main entry point called by Claude Code
    - Parses JSON input from stdin containing model, workspace, and context data
@@ -19,17 +19,22 @@ This is a custom status line implementation for Claude Code featuring real-time 
 
 2. **update-usage.sh** - Background updater (runs async)
    - Called by statusline.sh when cache is >60s old
-   - Runs `npx ccusage blocks --active --json` for current session tokens only
-   - Runs `bash fetch-pro-usage.sh` for Claude Pro web usage percentages
+   - Calls `fetch-code-usage.sh` for Claude Code session tokens
+   - Calls `fetch-pro-usage.sh` for Claude Pro web usage percentages
    - Writes to `.usage_cache` in JSON format with timestamp
 
-3. **fetch-pro-usage.sh** - Pro usage fetcher (optional)
+3. **fetch-code-usage.sh** - Code usage fetcher
+   - Runs `npx ccusage blocks --active --json`
+   - Extracts total session tokens
+   - Returns raw token count
+
+4. **fetch-pro-usage.sh** - Pro usage fetcher (optional)
    - Uses curl to call Claude web API
    - Authenticates with sessionKey cookie from .env
    - Fetches from `https://claude.ai/api/organizations/{ORG_ID}/usage`
-   - Returns Pro usage percentages for 5-hour and 7-day windows
+   - Returns Pro usage percentages and reset times for 5-hour and 7-day windows
 
-4. **claude-statusline.omp.json** - Oh-my-posh theme configuration
+5. **claude-statusline.omp.json** - Oh-my-posh theme configuration
    - Defines powerline-style segments with colors and icons
    - Reads data from `CLAUDE_*` environment variables
    - Uses diamond and powerline styles for visual separation
@@ -64,9 +69,6 @@ npx ccusage weekly --json
 ### Configuration
 
 ```bash
-# Edit token limits (REQUIRED after installation)
-nano ~/.claude/usage-limits.conf
-
 # Edit oh-my-posh theme (colors, icons, segment order)
 nano ~/.claude/claude-statusline.omp.json
 
@@ -144,16 +146,14 @@ Powerline symbols (`\ue0b0`, `\ue0b6`, etc.) create the connected appearance.
 1. **Status line not appearing**: Check `~/.claude/settings.json` has correct `statusLine.command` path
 2. **Usage shows empty**: Run `bash ~/.claude/update-usage.sh` manually and check for errors
 3. **Git status not showing**: Ensure you're in a git repository directory
-4. **Percentages incorrect**: Verify limits in `usage-limits.conf` match actual subscription (use `/usage` command)
-5. **Slow rendering**: Install ccusage globally: `npm install -g ccusage` and change script to use `ccusage` instead of `npx ccusage`
+4. **Slow rendering**: Install ccusage globally: `npm install -g ccusage` and change script to use `ccusage` instead of `npx ccusage`
 
 ## Configuration File Locations
 
 All files install to `~/.claude/`:
-- Scripts: `statusline.sh`, `update-usage.sh`
-- Config: `usage-limits.conf`, `claude-statusline.omp.json`
+- Scripts: `statusline.sh`, `update-usage.sh`, `fetch-code-usage.sh`, `fetch-pro-usage.sh`
+- Config: `claude-statusline.omp.json`, `.env`
 - Cache: `.usage_cache` (auto-generated, don't edit)
-- Docs: `README.md`, `docs/` directory
 
 ## Performance Characteristics
 

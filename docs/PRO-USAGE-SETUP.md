@@ -63,14 +63,17 @@ CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  # (add this)
 ```bash
 cd ~/Qsync/Workspace/oh-my-claude
 
-# Copy updated scripts
-cp update-usage.sh ~/.claude/
-cp statusline.sh ~/.claude/
-cp fetch-pro-usage.sh ~/.claude/
+# Copy updated scripts from src/
+cp src/update-usage.sh ~/.claude/
+cp src/statusline.sh ~/.claude/
+cp src/fetch-pro-usage.sh ~/.claude/
+cp src/fetch-code-usage.sh ~/.claude/
+cp src/claude-statusline.omp.json ~/.claude/
 cp .env ~/.claude/
 
-# Make fetch script executable
+# Make fetch scripts executable
 chmod +x ~/.claude/fetch-pro-usage.sh
+chmod +x ~/.claude/fetch-code-usage.sh
 ```
 
 ### 4. Test

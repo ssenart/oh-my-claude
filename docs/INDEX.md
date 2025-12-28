@@ -18,28 +18,20 @@ Complete guide to the custom Claude Code status line implementation.
 
 ```
 ~/.claude/
-├── README.md                           ← Start here!
-├── CLAUDE.md                           ← Guide for Claude Code
-├── CHANGELOG.md                        ← Version history
-│
-├── docs/                               ← Documentation folder
-│   ├── INDEX.md                        ← This file
-│   ├── STATUS_LINE_QUICK_REFERENCE.md ← Common tasks
-│   ├── STATUS_LINE_DOCUMENTATION.md   ← Full technical docs
-│   └── EXAMPLES.md                     ← Visual examples
-│
 ├── statusline.sh                       ← Main script
+├── update-usage.sh                     ← Usage cache updater
+├── fetch-code-usage.sh                 ← Code session token fetcher
+├── fetch-pro-usage.sh                  ← Pro usage fetcher
 ├── claude-statusline.omp.json          ← Oh-my-posh theme
-├── update-usage.sh                     ← Usage updater
-├── usage-limits.conf                   ← YOUR CONFIG (edit this!)
-└── .usage_cache                        ← Auto-generated cache
+├── .env                                ← API credentials (YOUR CONFIG)
+└── .usage_cache                        ← Auto-generated cache (JSON)
 ```
 
 ## What to Read When
 
 ### 🚀 Just Getting Started
 1. **../README.md** - Understand what you have
-2. Edit **../usage-limits.conf** - Set your token limits
+2. **docs/PRO-USAGE-SETUP.md** - Set up Pro usage tracking (optional)
 3. Test with command from **STATUS_LINE_QUICK_REFERENCE.md**
 
 ### 🔧 Want to Customize
@@ -60,7 +52,7 @@ Complete guide to the custom Claude Code status line implementation.
 ## Key Sections by Topic
 
 ### Configuration
-- **Setting token limits**: ../README.md, STATUS_LINE_QUICK_REFERENCE.md
+- **Pro usage setup**: PRO-USAGE-SETUP.md
 - **Changing colors**: STATUS_LINE_QUICK_REFERENCE.md, STATUS_LINE_DOCUMENTATION.md
 - **Segment order**: STATUS_LINE_QUICK_REFERENCE.md
 - **Cache timeout**: STATUS_LINE_QUICK_REFERENCE.md
@@ -110,10 +102,10 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 bash ~/.claude/update-usage.sh
 
 # View cache
-cat ~/.claude/.usage_cache
+cat ~/.claude/.usage_cache | jq .
 
-# Edit limits
-nano ~/.claude/usage-limits.conf
+# Test Pro usage fetching
+bash ~/.claude/fetch-pro-usage.sh --debug
 ```
 
 ## Getting Help

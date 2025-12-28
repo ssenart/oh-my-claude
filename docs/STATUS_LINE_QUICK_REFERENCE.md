@@ -2,19 +2,6 @@
 
 ## Common Operations
 
-### Update Token Limits
-
-Edit `~/.claude/usage-limits.conf`:
-```bash
-FIVE_HOUR_LIMIT=16000000
-WEEKLY_LIMIT=72000000
-```
-
-Then run:
-```bash
-bash ~/.claude/update-usage.sh
-```
-
 ### Force Usage Update
 
 ```bash
@@ -55,12 +42,10 @@ Edit segment colors in `~/.claude/claude-statusline.omp.json`:
 1. Path (Orange)
 2. Git Status (Yellow/Dynamic)
 3. Context Usage (Teal)
-4. Session & Weekly Limits (Pink)
-5. Model (Blue)
-
-### Token Limits
-- **5-hour**: 16M tokens
-- **Weekly**: 72M tokens
+4. Code Usage - Session Tokens (Cyan)
+5. Pro Usage - 5h/7d Percentages (Pink)
+6. Reset Times - 5h/7d Countdowns (Purple)
+7. Model (Blue)
 
 ### Update Frequency
 - **Cache timeout**: 60 seconds
@@ -70,21 +55,13 @@ Edit segment colors in `~/.claude/claude-statusline.omp.json`:
 
 ```
 ~/.claude/
-├── README.md                        # Getting started guide
-├── CLAUDE.md                        # Guide for Claude Code
-├── CHANGELOG.md                     # Version history
-│
-├── docs/                            # Documentation folder
-│   ├── INDEX.md                     # Documentation index
-│   ├── STATUS_LINE_DOCUMENTATION.md # Full technical docs
-│   ├── STATUS_LINE_QUICK_REFERENCE.md # This file
-│   └── EXAMPLES.md                  # Visual examples
-│
 ├── statusline.sh                    # Main status line script
+├── update-usage.sh                  # Usage cache updater
+├── fetch-code-usage.sh              # Code session token fetcher
+├── fetch-pro-usage.sh               # Pro usage fetcher
 ├── claude-statusline.omp.json       # Oh-my-posh theme
-├── update-usage.sh                  # Usage updater script
-├── usage-limits.conf                # Your token limits
-└── .usage_cache                     # Cached usage data
+├── .env                             # API credentials
+└── .usage_cache                     # Cached usage data (JSON)
 ```
 
 ## Troubleshooting Commands
@@ -112,12 +89,14 @@ bash ~/.claude/update-usage.sh
 ## Example Status Line Output
 
 ```
- oh-my-claude  main 󰍛 45%  5h:76% (12.2M/16M) W:17% (12.4M/72M) 󰯉 Sonnet 4.5
+ oh-my-claude  main 󰍛 45% # 14.3M 󰓅 5h:73% 7d:24% 󰔛 5h:3h7min 7d:Thu09:59 󰯉 Sonnet 4.5
 ```
 
 Where:
 - ** oh-my-claude** = Current directory (path segment, orange)
 - ** main** = Git branch with upstream status (yellow, dynamic colors based on status)
 - **󰍛 45%** = Context window 45% full (teal)
-- ** 5h:76% (12.2M/16M) W:17% (12.4M/72M)** = Session and weekly usage (pink)
+- **# 14.3M** = Code session tokens (cyan)
+- **󰓅 5h:73% 7d:24%** = Pro usage percentages (pink)
+- **󰔛 5h:3h7min 7d:Thu09:59** = Reset time countdowns (purple)
 - **󰯉 Sonnet 4.5** = Current model (blue)

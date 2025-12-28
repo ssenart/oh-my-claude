@@ -4,19 +4,16 @@
 cache_file="$HOME/.claude/.usage_cache"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Get current session usage from ccusage (total tokens only)
-session_data=$(npx ccusage blocks --active --json 2>/dev/null)
-if [ $? -ne 0 ]; then
-    # ccusage failed, don't modify cache
-    exit 0
-fi
-
-# Extract total tokens for active session
-session_tokens=$(echo "$session_data" | jq -r '.blocks[0].totalTokens // 0' 2>/dev/null)
-
-# Validate we got a valid number
-if ! [[ "$session_tokens" =~ ^[0-9]+$ ]]; then
-    # Invalid data, don't modify cache
+# Get current session usage from ccusage (if available)
+session_tokens=""
+if [ -f "$script_dir/fetch-code-usage.sh" ]; then
+    session_tokens=$(bash "$script_dir/fetch-code-usage.sh" 2>/dev/null)
+    if [ $? -ne 0 ] || ! [[ "$session_tokens" =~ ^[0-9]+$ ]]; then
+        # ccusage failed or returned invalid data, don't modify cache
+        exit 0
+    fi
+else
+    # Script not found, don't modify cache
     exit 0
 fi
 

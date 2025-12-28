@@ -31,10 +31,12 @@ The custom status line displays:
 | File | Purpose |
 |------|---------|
 | `~/.claude/statusline.sh` | Main status line script that processes JSON input and calls oh-my-posh |
+| `~/.claude/update-usage.sh` | Background script that fetches usage data from Code and Pro APIs |
+| `~/.claude/fetch-code-usage.sh` | Fetches Code session tokens using ccusage |
+| `~/.claude/fetch-pro-usage.sh` | Fetches Pro usage percentages from Claude web API |
 | `~/.claude/claude-statusline.omp.json` | Oh-my-posh theme configuration defining segments and colors |
-| `~/.claude/update-usage.sh` | Background script that fetches usage data using ccusage |
-| `~/.claude/usage-limits.conf` | Configuration file with token limits for your subscription |
-| `~/.claude/.usage_cache` | Cache file storing usage percentages and token counts |
+| `~/.claude/.env` | API credentials (sessionKey, orgId) for Pro usage |
+| `~/.claude/.usage_cache` | JSON cache file storing Code tokens and Pro percentages |
 
 ## Status Line Segments
 
@@ -113,25 +115,6 @@ The custom status line displays:
 }
 ```
 
-#### 2. Token Limits (`~/.claude/usage-limits.conf`)
-
-Edit this file to match your Claude subscription limits:
-
-```bash
-# Claude subscription token limits configuration
-# Edit these values to match your subscription plan
-
-# 5-hour session token limit
-FIVE_HOUR_LIMIT=16000000
-
-# Weekly token limit (all models)
-WEEKLY_LIMIT=72000000
-```
-
-**To find your limits:**
-- Run `/usage` in Claude Code to see your current limits
-- Update the values in the config file accordingly
-
 ## How It Works
 
 ### Status Line Execution Flow
@@ -153,27 +136,28 @@ WEEKLY_LIMIT=72000000
 ### Usage Tracking Flow
 
 1. **update-usage.sh triggered** - Every 60 seconds (runs in background)
-2. **Load configuration** - Read token limits from usage-limits.conf
-3. **Fetch session data** - `npx ccusage blocks --active --json`
-   - Extracts total tokens from active 5-hour block
-4. **Fetch weekly data** - `npx ccusage weekly --json`
-   - Extracts total tokens from current week
-5. **Calculate percentages** - `(current_tokens / limit_tokens) * 100`
-6. **Format token counts** - Convert to millions (M)
-7. **Write to cache** - Format: `session_pct:weekly_pct:session_tokens:weekly_tokens:five_hour_limit:weekly_limit`
+2. **Fetch Code usage** - Calls `fetch-code-usage.sh` (runs ccusage)
+3. **Fetch Pro usage** - Calls `fetch-pro-usage.sh` (calls Claude web API)
+   - Returns percentages and reset times for 5-hour and 7-day windows
+4. **Write to cache** - JSON format with timestamps
 
 ### Cache Format
 
-The `.usage_cache` file contains colon-separated values:
+The `.usage_cache` file is in JSON format:
 
-```
-76:17:12236424:12364388:16000000:72000000
-│  │  │        │        │        └─ Weekly limit
-│  │  │        │        └─ 5-hour limit
-│  │  │        └─ Weekly total tokens
-│  │  └─ Session total tokens
-│  └─ Weekly percentage
-└─ Session percentage
+```json
+{
+  "code": {
+    "session_tokens": 14363079
+  },
+  "pro": {
+    "five_hour_pct": 73,
+    "five_hour_resets_at": "2025-12-28T13:00:00.013344+00:00",
+    "seven_day_pct": 24,
+    "seven_day_resets_at": "2026-01-01T09:00:00.013357+00:00"
+  },
+  "updated_at": "2025-12-28T10:11:46Z"
+}
 ```
 
 ## Customization
@@ -295,12 +279,18 @@ cache_timeout=60  # Change to desired seconds (e.g., 120, 300)
 - Navigate to a git repo: `cd ~/source/your-project`
 - Verify: `git status` should work
 
-### Wrong usage percentages
+### Usage not showing
 
-1. Update your limits in `~/.claude/usage-limits.conf`
+1. Check Pro usage setup (if using Pro tracking): See `PRO-USAGE-SETUP.md`
 2. Manually trigger update:
    ```bash
    bash ~/.claude/update-usage.sh
+   cat ~/.claude/.usage_cache | jq .
+   ```
+3. Test fetch scripts:
+   ```bash
+   bash ~/.claude/fetch-code-usage.sh --debug
+   bash ~/.claude/fetch-pro-usage.sh --debug
    ```
 
 ## Performance Considerations
@@ -317,7 +307,7 @@ cache_timeout=60  # Change to desired seconds (e.g., 120, 300)
    ```bash
    npm install -g ccusage
    ```
-   Then replace `npx ccusage` with `ccusage` in `update-usage.sh`
+   Then replace `npx ccusage` with `ccusage` in `fetch-code-usage.sh`
 
 2. **Increase cache timeout** to reduce background updates:
    ```bash
