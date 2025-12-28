@@ -58,9 +58,10 @@ else
 fi
 
 # Fetch usage data with automatic updates from ccusage
-cache_file="$HOME/.claude/.usage_cache"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cache_file="$script_dir/.usage_cache"
 cache_timeout=60
-update_script="$HOME/.claude/update-usage.sh"
+update_script="$script_dir/update-usage.sh"
 
 # Check if cache exists and is fresh
 if [ -f "$cache_file" ]; then
@@ -164,7 +165,7 @@ export CLAUDE_PRO_USAGE="$pro_usage_display"
 export CLAUDE_RESET="$reset_display"
 
 # Path to oh-my-posh config file
-config_file="$HOME/.claude/claude-statusline.omp.json"
+config_file="$script_dir/claude-statusline.omp.json"
 
 # Use oh-my-posh to render the status line with clean environment
 env -i \

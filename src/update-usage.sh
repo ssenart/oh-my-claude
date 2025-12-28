@@ -1,8 +1,8 @@
 #!/bin/bash
 # Background script to update Claude usage cache using ccusage and Pro usage API
 
-cache_file="$HOME/.claude/.usage_cache"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cache_file="$script_dir/.usage_cache"
 
 # Get current session usage from ccusage (if available)
 session_tokens=""
