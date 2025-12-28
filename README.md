@@ -91,6 +91,14 @@ oh-my-claude/
 
 ## Common Tasks
 
+### Check Version
+```bash
+bash ~/.claude/oh-my-claude/statusline.sh --version
+bash ~/.claude/oh-my-claude/update-usage.sh --version
+bash ~/.claude/oh-my-claude/fetch-code-usage.sh --version
+bash ~/.claude/oh-my-claude/fetch-pro-usage.sh --version
+```
+
 ### Update Usage Data
 ```bash
 bash ~/.claude/oh-my-claude/update-usage.sh
@@ -220,6 +228,31 @@ cat ~/.claude/settings.json
 - **Examples**: `docs/EXAMPLES.md` - Visual examples of all states
 - **Index**: `docs/INDEX.md` - Documentation navigation guide
 - **This file**: `README.md` - Overview and getting started
+
+## Version Management
+
+### Checking Version
+All scripts support the `--version` flag:
+```bash
+bash ~/.claude/oh-my-claude/statusline.sh --version
+```
+
+### For Developers: Bumping Version
+To update the project version, use the included helper script:
+```bash
+bash bump-version.sh
+```
+
+This will:
+- Update the `VERSION` file
+- Update `README.md` with the new version
+- Optionally create a git tag
+- Guide you through the process
+
+The script supports semantic versioning (MAJOR.MINOR.PATCH):
+- **Major**: Breaking changes (e.g., 1.6.0 → 2.0.0)
+- **Minor**: New features (e.g., 1.6.0 → 1.7.0)
+- **Patch**: Bug fixes (e.g., 1.6.0 → 1.6.1)
 
 ## Support
 

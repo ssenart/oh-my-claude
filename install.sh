@@ -4,8 +4,13 @@
 
 set -e
 
+# Read version from VERSION file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSION=$(cat "$SCRIPT_DIR/VERSION" 2>/dev/null || echo "unknown")
+
 echo "================================================"
 echo "   oh-my-claude Status Line Installation"
+echo "   Version: $VERSION"
 echo "================================================"
 echo ""
 
@@ -14,9 +19,6 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
-
-# Get the script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Installation directory
 INSTALL_DIR="$HOME/.claude/oh-my-claude"
@@ -61,7 +63,7 @@ mkdir -p "$INSTALL_DIR"
 echo -e "${GREEN}✓ Created $INSTALL_DIR${NC}"
 echo ""
 
-# Copy scripts
+# Copy scripts and VERSION file
 echo "Copying scripts..."
 cp "$SCRIPT_DIR/src/statusline.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/update-usage.sh" "$INSTALL_DIR/"
@@ -69,6 +71,7 @@ cp "$SCRIPT_DIR/src/fetch-code-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-pro-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/setup-env.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/claude-statusline.omp.json" "$INSTALL_DIR/"
+cp "$SCRIPT_DIR/VERSION" "$INSTALL_DIR/"
 
 echo -e "${GREEN}✓ Copied all scripts to $INSTALL_DIR${NC}"
 echo ""

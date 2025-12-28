@@ -1,7 +1,17 @@
 #!/bin/bash
 # Background script to update Claude usage cache using ccusage and Pro usage API
 
+# Get script directory and version
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Check same directory first (installed), then parent (development)
+VERSION=$(cat "$script_dir/VERSION" 2>/dev/null || cat "$script_dir/../VERSION" 2>/dev/null || echo "unknown")
+
+# Handle version flag
+if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
+    echo "oh-my-claude update-usage.sh version $VERSION"
+    exit 0
+fi
+
 cache_file="$script_dir/.usage_cache"
 
 # Get current session usage from ccusage (if available)

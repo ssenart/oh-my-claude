@@ -1,6 +1,17 @@
 #!/bin/bash
 # Status line command for Claude Code with oh-my-posh integration
 
+# Get script directory and version
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Check same directory first (installed), then parent (development)
+VERSION=$(cat "$script_dir/VERSION" 2>/dev/null || cat "$script_dir/../VERSION" 2>/dev/null || echo "unknown")
+
+# Handle version flag
+if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
+    echo "oh-my-claude statusline.sh version $VERSION"
+    exit 0
+fi
+
 # Read JSON input from stdin
 input=$(cat)
 
@@ -58,7 +69,6 @@ else
 fi
 
 # Fetch usage data with automatic updates from ccusage
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cache_file="$script_dir/.usage_cache"
 cache_timeout=60
 update_script="$script_dir/update-usage.sh"
