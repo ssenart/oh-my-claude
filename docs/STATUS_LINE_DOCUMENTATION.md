@@ -41,9 +41,9 @@ The custom status line displays:
 | `~/.claude/statusline.sh` | Main status line script that processes JSON input and calls oh-my-posh |
 | `~/.claude/update-usage.sh` | Background script that fetches usage data from Code and Pro APIs |
 | `~/.claude/fetch-code-usage.sh` | Fetches Code session tokens using ccusage |
-| `~/.claude/fetch-pro-usage.sh` | Fetches Pro usage percentages from Claude web API |
+| `~/.claude/fetch-pro-usage.sh` | Fetches Pro usage percentages from Anthropic OAuth API |
 | `~/.claude/claude-statusline.omp.json` | Oh-my-posh theme configuration defining segments and colors |
-| `~/.claude/.env` | API credentials (sessionKey, orgId) for Pro usage |
+| `~/.claude/.credentials.json` | OAuth credentials (auto-managed by Claude Code) |
 | `~/.claude/.usage_cache` | JSON cache file storing Code tokens and Pro percentages |
 
 ## Status Line Segments
@@ -102,7 +102,7 @@ The custom status line displays:
 - **Format**: `5h:XX% 7d:YY%`
 - **Example**: `󰓅 5h:90% 7d:27%`
 - **Updates**: Every 60 seconds via background process
-- **Note**: Requires `CLAUDE_SESSION_KEY` and `CLAUDE_ORG_ID` in `.env`
+- **Note**: Uses OAuth credentials automatically from `~/.claude/.credentials.json` (no setup required)
 
 ### 6. Reset Times (Purple)
 - **Icon**: `󰔛` (clock/timer icon)

@@ -25,10 +25,11 @@ Complete guide to the custom Claude Code status line implementation.
 ├── statusline.sh                       ← Main script
 ├── update-usage.sh                     ← Usage cache updater
 ├── fetch-code-usage.sh                 ← Code session token fetcher
-├── fetch-pro-usage.sh                  ← Pro usage fetcher
+├── fetch-pro-usage.sh                  ← Pro usage fetcher (uses OAuth)
 ├── claude-statusline.omp.json          ← Oh-my-posh theme
-├── .env                                ← API credentials (YOUR CONFIG)
 └── .usage_cache                        ← Auto-generated cache (JSON)
+
+**Note:** OAuth credentials are auto-managed by Claude Code at `~/.claude/.credentials.json` (not part of this repository)
 ```
 
 ## What to Read When

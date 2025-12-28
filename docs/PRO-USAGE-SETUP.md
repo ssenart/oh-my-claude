@@ -1,6 +1,6 @@
 # Claude Pro Usage Tracking Setup
 
-This guide explains how to set up automated tracking of your Claude Pro web usage alongside Claude Code usage.
+This guide explains automated tracking of your Claude Pro web usage alongside Claude Code usage. **No setup required** - it works automatically with OAuth credentials!
 
 ## What You Get
 
@@ -14,92 +14,68 @@ This gives you real-time visibility into your Claude Pro usage right in Claude C
 
 ## How It Works
 
-1. **fetch-pro-usage.sh** - Fetches Pro usage from Claude's web API
-   - Uses sessionKey cookie for authentication
-   - Calls `https://claude.ai/api/organizations/{ORG_ID}/usage`
-   - Returns percentages: `five_hour%:seven_day%`
+1. **fetch-pro-usage.sh** - Fetches Pro usage from Anthropic's OAuth API
+   - Uses OAuth credentials from `~/.claude/.credentials.json`
+   - Calls `https://api.anthropic.com/api/oauth/usage`
+   - Returns percentages and reset times
 
-2. **update-usage.sh** - Updated to fetch both Code and Pro usage
-   - Calls `ccusage` for Code usage (existing)
-   - Calls `fetch-pro-usage.sh` for Pro usage (new)
-   - Writes 8 fields to cache (was 6 fields)
+2. **update-usage.sh** - Fetches both Code and Pro usage
+   - Calls `ccusage` for Code usage
+   - Calls `fetch-pro-usage.sh` for Pro usage
+   - Writes JSON to cache
 
-3. **statusline.sh** - Updated to display both
-   - Reads 8-field cache format
+3. **statusline.sh** - Displays both metrics
+   - Reads JSON cache format
    - Shows Code usage with token counts
-   - Shows Pro usage with percentages only
+   - Shows Pro usage with percentages and reset times
 
-## Setup Steps
+## Setup (Automatic!)
 
-### 1. Get Your Credentials
+Pro usage tracking is **fully automatic** - your OAuth credentials are managed by Claude Code at `~/.claude/.credentials.json`.
 
-You need two values from your browser when logged into claude.ai:
+### Requirements
 
-**sessionKey:**
-1. Open claude.ai in your browser (while logged in)
-2. Open DevTools (F12) → Application tab → Cookies
-3. Find `sessionKey` cookie value (starts with `sk-ant-sid01-...`)
+Just ensure:
+1. You're logged into Claude Code
+2. You have a Pro or Enterprise subscription
+3. Pro usage will appear in your status line automatically!
 
-**Organization ID:**
-1. Go to https://claude.ai/settings/usage
-2. Open DevTools (F12) → Network tab → Refresh page
-3. Find the request to `.../organizations/{ID}/usage`
-4. Copy the organization ID (UUID format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
+### Verification
 
-### 2. Update .env File
-
-Edit `.env` in the repository:
+To verify OAuth credentials are available:
 
 ```bash
-CLAUDE_SESSION_KEY=sk-ant-sid01-...
-CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-```
+# Check OAuth credentials exist
+cat ~/.claude/.credentials.json | jq '.claudeAiOauth.accessToken'
+# Should output: "sk-ant-oat01-..."
 
-### 3. Copy Files to ~/.claude
-
-```bash
-cd ~/Qsync/Workspace/oh-my-claude
-
-# Copy updated scripts from src/
-cp src/update-usage.sh ~/.claude/
-cp src/statusline.sh ~/.claude/
-cp src/fetch-pro-usage.sh ~/.claude/
-cp src/fetch-code-usage.sh ~/.claude/
-cp src/claude-statusline.omp.json ~/.claude/
-cp .env ~/.claude/
-
-# Make fetch scripts executable
-chmod +x ~/.claude/fetch-pro-usage.sh
-chmod +x ~/.claude/fetch-code-usage.sh
-```
-
-### 4. Test
-
-```bash
 # Test Pro usage fetching
-bash ~/.claude/fetch-pro-usage.sh --debug
+bash ~/.claude/oh-my-claude/src/fetch-pro-usage.sh --debug
 
 # Expected output:
-# Fetching: https://claude.ai/api/organizations/.../usage
+# Fetching: https://api.anthropic.com/api/oauth/usage
 # HTTP 200
-# Response: { "five_hour": { "utilization": 36.0 }, ... }
-# 36:20
+# Response: { "five_hour": { "utilization": 25.0 }, ... }
+# 25|40|2025-12-28T23:00:00...
 
 # Test cache update
-bash ~/.claude/update-usage.sh
-cat ~/.claude/.usage_cache
+bash ~/.claude/oh-my-claude/src/update-usage.sh
+cat ~/.claude/oh-my-claude/.usage_cache | jq .
 
-# Expected: JSON format
+# Expected: JSON format with both code and pro fields
 # {
 #   "code": { "session_tokens": 7991282 },
-#   "pro": { "five_hour_pct": 41, "seven_day_pct": 20 },
+#   "pro": {
+#     "five_hour_pct": 25,
+#     "five_hour_resets_at": "2025-12-28T23:00:00...",
+#     "seven_day_pct": 40,
+#     "seven_day_resets_at": "2026-01-01T09:00:00..."
+#   },
 #   "updated_at": "2025-12-28T09:31:27Z"
 # }
 ```
 
-### 5. Verify in Status Line
-
-Your next Claude Code prompt should show the updated status line with both Code and Pro usage.
+That's it! Your status line will automatically show Pro usage.
 
 ## Cache Format
 
@@ -141,72 +117,65 @@ cat ~/.claude/.usage_cache | jq -r '.pro.seven_day_resets_at'
 
 ## Troubleshooting
 
-### "ERROR: CLAUDE_SESSION_KEY not found in .env"
+### Pro usage not showing?
 
-Solution: Add `CLAUDE_SESSION_KEY=sk-ant-sid01-...` to `.env` file
+1. Check OAuth credentials exist:
+```bash
+cat ~/.claude/.credentials.json | jq '.claudeAiOauth'
+```
 
-### "ERROR: HTTP 403"
+2. Verify access token is present:
+```bash
+jq '.claudeAiOauth.accessToken' ~/.claude/.credentials.json
+```
 
-Problem: Cloudflare is blocking the request or sessionKey is invalid
+3. Force cache refresh:
+```bash
+bash ~/.claude/oh-my-claude/src/update-usage.sh
+```
+
+4. Check cache for Pro data:
+```bash
+cat ~/.claude/oh-my-claude/.usage_cache | jq '.pro'
+# Should output Pro usage fields
+```
+
+5. Test fetch script directly:
+```bash
+bash ~/.claude/oh-my-claude/src/fetch-pro-usage.sh --debug
+```
+
+### "ERROR: Could not extract access token"
+
+OAuth credentials file is missing or invalid.
 
 Solutions:
-1. Update your sessionKey (they expire periodically)
-2. Check browser headers match the script headers
-3. Verify you can access claude.ai/settings/usage in your browser
+1. Ensure you're logged into Claude Code
+2. Try logging out and back in to refresh credentials
+3. Verify file exists: `ls -la ~/.claude/.credentials.json`
 
-### Pro usage not showing in status line
+### "ERROR: HTTP 401" or "HTTP 403"
 
-Check:
-```bash
-# Is cache valid JSON?
-cat ~/.claude/.usage_cache | jq .
-# Should output formatted JSON
+Authentication failed.
 
-# Are Pro fields populated?
-cat ~/.claude/.usage_cache | jq '.pro'
-# Should output: { "five_hour_pct": 41, "seven_day_pct": 20 }
+Solutions:
+1. Re-authenticate with Claude Code (sign out and back in)
+2. OAuth tokens will auto-refresh
+3. Force update: `bash ~/.claude/oh-my-claude/src/update-usage.sh`
 
-# Is fetch-pro-usage.sh working?
-bash ~/.claude/fetch-pro-usage.sh
-# Should output: 41:20 (or similar)
-```
+### No Pro subscription?
 
-### sessionKey expired
+Pro usage tracking only works with:
+- Claude Pro subscription
+- Claude Enterprise subscription
 
-sessionKeys expire after a period of inactivity. When this happens:
-
-1. Log into claude.ai in your browser
-2. Get new sessionKey from cookies
-3. Update `.env` with new sessionKey
-4. Copy updated `.env` to `~/.claude/`
-
-## Maintenance
-
-**How often do sessionKeys expire?**
-- Varies, but typically days to weeks
-- You'll know it expired when Pro usage stops showing
-
-**Updating sessionKey:**
-```bash
-# Edit .env in repo
-nano .env
-
-# Copy to ~/.claude
-cp .env ~/.claude/
-
-# Test
-bash ~/.claude/fetch-pro-usage.sh --debug
-```
+Free tier users will only see Code usage tokens.
 
 ## Security Notes
 
-- `.env` contains authentication credentials - keep it secure
-- Don't commit `.env` to git (it's in .gitignore)
-- sessionKey gives access to your Claude account - treat it like a password
-- Tokens are stored in plain text in `.env` - protect file permissions:
-  ```bash
-  chmod 600 ~/.claude/.env
-  ```
+- OAuth credentials at `~/.claude/.credentials.json` are auto-managed by Claude Code
+- Credentials give access to your Claude account - file permissions should be `600`
+- Tokens auto-refresh - no manual credential management needed
 
 ## Performance
 
@@ -228,10 +197,10 @@ update-usage.sh (runs in background)
     └─→ Writes JSON to .usage_cache with timestamp
 
 fetch-pro-usage.sh (called by update-usage.sh)
-    ├─→ Reads sessionKey and org ID from .env
-    ├─→ curl https://claude.ai/api/organizations/{ORG_ID}/usage
+    ├─→ Reads OAuth accessToken from ~/.claude/.credentials.json
+    ├─→ curl https://api.anthropic.com/api/oauth/usage
     ├─→ Parses JSON response
-    └─→ Outputs: five_hour_pct:seven_day_pct
+    └─→ Outputs: five_hour_pct|seven_day_pct|five_hour_resets|seven_day_resets
 ```
 
 ## Display Format
@@ -260,11 +229,11 @@ A: The scripts will try to fetch Pro usage but fail gracefully. Only Code usage 
 **Q: Can I disable Pro tracking temporarily?**
 A: Yes, rename `fetch-pro-usage.sh` to disable:
 ```bash
-mv ~/.claude/fetch-pro-usage.sh ~/.claude/fetch-pro-usage.sh.disabled
+mv ~/.claude/oh-my-claude/src/fetch-pro-usage.sh ~/.claude/oh-my-claude/src/fetch-pro-usage.sh.disabled
 ```
 
 **Q: Does this use OAuth authentication?**
-A: No, Pro usage tracking uses the sessionKey cookie from your browser.
+A: Yes! Pro usage tracking now uses OAuth credentials automatically managed by Claude Code at `~/.claude/.credentials.json`.
 
 **Q: Why percentages only for Pro (no token counts)?**
 A: The Claude web API only returns percentage utilization, not absolute token counts.

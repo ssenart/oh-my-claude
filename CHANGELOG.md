@@ -1,6 +1,68 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.6 - Current (2024-12-28)
+## Version 1.7.0 - Current (2024-12-29)
+
+### Major Changes
+- **OAuth Authentication Migration**: Migrated from session key to OAuth credentials
+  - Pro usage now uses `https://api.anthropic.com/api/oauth/usage` endpoint
+  - Credentials automatically managed by Claude Code at `~/.claude/.credentials.json`
+  - Simpler authentication with Bearer token (no browser headers needed)
+  - OAuth tokens auto-refresh (no manual maintenance required)
+
+### Added
+- `docs/OAUTH-CREDENTIALS-GUIDE.md` - OAuth credentials guide
+  - Explains automatic credential management
+  - Troubleshooting for OAuth authentication
+  - Verification steps
+- `docs/MIGRATION-GUIDE.md` - Migration guide from session keys
+  - Detailed comparison of old vs new approach
+  - Benefits of OAuth authentication
+  - Backward compatibility notes
+- `fetch_usage.sh` - Standalone OAuth usage fetcher (example implementation)
+
+### Changed
+- **`src/fetch-pro-usage.sh`**: Complete OAuth rewrite
+  - Reads from `~/.claude/.credentials.json` instead of `.env`
+  - Uses official OAuth API endpoint
+  - Simplified headers (removed browser-like headers)
+  - Better error messages
+- **`install.sh`**: Removed credential setup prompts
+  - No longer calls `setup-env.sh`
+  - Automatic OAuth messaging
+  - Cleaner installation process
+
+### Removed
+- **Deprecated files**:
+  - `src/setup-env.sh` - No longer needed (OAuth auto-managed)
+  - `.env.example` - No environment variables needed
+  - `docs/GET_SESSION_KEY.md` - Session key extraction guide (obsolete)
+- **Manual credential extraction**: No browser DevTools needed
+- **Organization ID requirement**: OAuth endpoint doesn't need org ID
+
+### Documentation Updates
+- **Updated for OAuth**:
+  - `README.md` - Removed `.env` reference, emphasize automatic tracking
+  - `docs/PRO-USAGE-SETUP.md` - Simplified to automatic setup
+  - `docs/INSTALLATION.md` - Removed credential prompts
+  - `docs/STATUS_LINE_DOCUMENTATION.md` - Updated OAuth credentials info
+  - `docs/CLAUDE.md` - Updated architecture descriptions
+  - `docs/INDEX.md` - Updated file structure
+  - `docs/STATUS_LINE_QUICK_REFERENCE.md` - Updated file references
+
+### Benefits
+- **Zero Manual Setup**: No credential extraction from browser
+- **Auto-Refresh**: OAuth tokens refresh automatically
+- **Simpler**: Single credential vs session key + org ID
+- **More Reliable**: No session expiration issues
+- **Standard**: Uses official Anthropic OAuth API
+
+### Migration Notes
+- Existing users: No action needed - OAuth credentials already exist
+- Old `.env` files are ignored (can be deleted manually)
+- Cache format unchanged - backward compatible
+- Status line display unchanged
+
+## Version 1.6 (2024-12-28)
 
 ### Changed
 - **Removed OAuth token authentication**: Simplified to use only sessionKey authentication

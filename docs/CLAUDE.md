@@ -29,9 +29,9 @@ This is a custom status line implementation for Claude Code featuring real-time 
    - Returns raw token count
 
 4. **fetch-pro-usage.sh** - Pro usage fetcher (optional)
-   - Uses curl to call Claude web API
-   - Authenticates with sessionKey cookie from .env
-   - Fetches from `https://claude.ai/api/organizations/{ORG_ID}/usage`
+   - Uses curl to call Anthropic OAuth API
+   - Authenticates with OAuth access token from `~/.claude/.credentials.json`
+   - Fetches from `https://api.anthropic.com/api/oauth/usage`
    - Returns Pro usage percentages and reset times for 5-hour and 7-day windows
 
 5. **claude-statusline.omp.json** - Oh-my-posh theme configuration
@@ -150,10 +150,12 @@ Powerline symbols (`\ue0b0`, `\ue0b6`, etc.) create the connected appearance.
 
 ## Configuration File Locations
 
-All files install to `~/.claude/`:
+All files install to `~/.claude/oh-my-claude/`:
 - Scripts: `statusline.sh`, `update-usage.sh`, `fetch-code-usage.sh`, `fetch-pro-usage.sh`
-- Config: `claude-statusline.omp.json`, `.env`
+- Config: `claude-statusline.omp.json`
 - Cache: `.usage_cache` (auto-generated, don't edit)
+
+**Note:** OAuth credentials are auto-managed by Claude Code at `~/.claude/.credentials.json` (external to oh-my-claude).
 
 ## Performance Characteristics
 

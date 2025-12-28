@@ -58,10 +58,11 @@ Edit segment colors in `~/.claude/claude-statusline.omp.json`:
 ├── statusline.sh                    # Main status line script
 ├── update-usage.sh                  # Usage cache updater
 ├── fetch-code-usage.sh              # Code session token fetcher
-├── fetch-pro-usage.sh               # Pro usage fetcher
+├── fetch-pro-usage.sh               # Pro usage fetcher (uses OAuth)
 ├── claude-statusline.omp.json       # Oh-my-posh theme
-├── .env                             # API credentials
 └── .usage_cache                     # Cached usage data (JSON)
+
+_Note: OAuth credentials are auto-managed at `~/.claude/.credentials.json`_
 ```
 
 ## Troubleshooting Commands

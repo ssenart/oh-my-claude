@@ -104,7 +104,7 @@ All commands should return version numbers without errors.
    - ✅ Make scripts executable
    - ✅ Backup your existing `settings.json`
    - ✅ Update `settings.json` with new statusLine command
-   - ✅ **Interactively guide you** through setting up your `.env` file with credentials
+   - ✅ Pro usage tracking works automatically with OAuth credentials
 
 4. **Installation output**:
    ```
@@ -135,24 +135,9 @@ All commands should return version numbers without errors.
       Installation Complete!
    ================================================
 
-   ================================================
-      Interactive .env Setup
-   ================================================
-
-   Follow these steps to get your sessionKey:
-
-   1. Open https://claude.ai in your browser (logged in)
-   2. Press F12 to open Developer Tools
-   3. Go to Application → Cookies → https://claude.ai
-   4. Find 'sessionKey' and copy its value (starts with sk-ant-sid01-)
-
-   Paste your sessionKey here: [user input]
-
-   Now let's get your Organization ID:
-   Your organization ID from OAuth was: 5c4876d6-541a-4464-97b9-30fd7a8418c9
-   Use this org ID? (y/n): [user input]
-
-   ✓ .env file created successfully!
+   ✓ Pro usage tracking uses OAuth credentials
+   ✓ Credentials automatically managed by Claude Code
+   ✓ No additional setup required!
 
    ✓ Configuration complete
    ```
@@ -184,13 +169,7 @@ If you prefer manual installation or need to customize the process:
    chmod +x ~/.claude/oh-my-claude/fetch-pro-usage.sh
    ```
 
-4. **Create .env file**:
-   ```bash
-   cp .env.example ~/.claude/oh-my-claude/.env
-   chmod 600 ~/.claude/oh-my-claude/.env
-   ```
-
-5. **Backup and update settings.json**:
+4. **Backup and update settings.json**:
    ```bash
    # Backup existing settings
    cp ~/.claude/settings.json ~/.claude/settings.json.backup
@@ -212,37 +191,24 @@ If you prefer manual installation or need to customize the process:
 
 ## Post-Installation Configuration
 
-The installation script **interactively sets up** your `.env` file during installation, so you're ready to go immediately!
+**No configuration needed!** Pro usage tracking works automatically with OAuth credentials managed by Claude Code.
 
-### If You Need to Reconfigure
+### Verification
 
-You can reconfigure your credentials at any time:
+To verify OAuth credentials are set up:
 
 ```bash
-bash ~/.claude/oh-my-claude/setup-env.sh
+cat ~/.claude/.credentials.json | jq '.claudeAiOauth.accessToken'
 ```
 
-This will guide you through:
-1. Getting your `sessionKey` from browser cookies
-2. Finding your organization ID
+Should output: `"sk-ant-oat01-..."`
 
-See [GET_SESSION_KEY.md](GET_SESSION_KEY.md) for detailed instructions on extracting credentials from your browser.
+### Testing
 
-### Manual Configuration (Alternative)
-
-If you prefer to edit manually:
+Test Pro usage fetching:
 
 ```bash
-nano ~/.claude/oh-my-claude/.env
-```
-
-Required fields:
-```bash
-# Get from browser DevTools → Application → Cookies → sessionKey
-CLAUDE_SESSION_KEY=sk-ant-sid01-YOUR_SESSION_KEY
-
-# Get from: https://claude.ai/settings/usage → Network tab
-CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+bash ~/.claude/oh-my-claude/src/fetch-pro-usage.sh --debug
 ```
 
 For more details, see [PRO-USAGE-SETUP.md](PRO-USAGE-SETUP.md).
@@ -283,9 +249,8 @@ cat ~/.claude/oh-my-claude/.usage_cache | jq .
 ├── statusline.sh                    # Main status line script
 ├── update-usage.sh                  # Background usage updater
 ├── fetch-code-usage.sh              # Code session token fetcher
-├── fetch-pro-usage.sh               # Pro usage fetcher
+├── fetch-pro-usage.sh               # Pro usage fetcher (uses OAuth)
 ├── claude-statusline.omp.json       # Oh-my-posh theme configuration
-├── .env                             # Your API credentials (created)
 └── .usage_cache                     # Usage cache (auto-generated)
 ```
 
@@ -375,13 +340,13 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 
 ### Usage Data Not Showing
 
-#### Check .env configuration
+#### Check OAuth credentials
 
 ```bash
-cat ~/.claude/oh-my-claude/.env
+cat ~/.claude/.credentials.json | jq '.claudeAiOauth'
 ```
 
-Verify credentials are set (not placeholder values).
+Verify OAuth credentials exist. If missing, re-authenticate with Claude Code.
 
 #### Test fetch scripts
 
@@ -416,9 +381,9 @@ If you see "CONFIG ERROR" in the status line, it usually means:
 2. **Invalid JSON in cache**: Delete cache and regenerate:
    ```bash
    rm ~/.claude/oh-my-claude/.usage_cache
-   bash ~/.claude/oh-my-claude/update-usage.sh
+   bash ~/.claude/oh-my-claude/src/update-usage.sh
    ```
-3. **.env file misconfigured**: Check credentials in `.env`
+3. **OAuth credentials missing**: Re-authenticate with Claude Code
 
 ### Oh-my-posh Not Found
 
@@ -477,7 +442,7 @@ To update to the latest version:
    bash install.sh
    ```
 
-The script will backup your current settings and `.env` file before updating.
+The script will backup your current settings before updating.
 
 ## Next Steps
 

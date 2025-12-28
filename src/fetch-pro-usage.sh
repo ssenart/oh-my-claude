@@ -1,5 +1,5 @@
 #!/bin/bash
-# Fetch Claude Pro usage data using sessionKey cookie from .env
+# Fetch Claude Pro usage data using OAuth credentials
 # Uses curl and jq - no Node.js dependencies
 
 # Get script directory and version
@@ -13,7 +13,8 @@ if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
     exit 0
 fi
 
-env_file="$script_dir/.env"
+# OAuth credentials path
+CREDS_PATH="${HOME}/.claude/.credentials.json"
 
 # Check for required tools
 if ! command -v curl >/dev/null 2>&1; then
@@ -21,29 +22,27 @@ if ! command -v curl >/dev/null 2>&1; then
     exit 1
 fi
 
-if ! command -v jq >/dev/null 2>&1; then
-    echo "ERROR: jq not found" >&2
+# Check if credentials file exists
+if [ ! -f "$CREDS_PATH" ]; then
+    echo "ERROR: OAuth credentials file not found at $CREDS_PATH" >&2
+    echo "Please ensure Claude Code is authenticated." >&2
     exit 1
 fi
 
-# Load credentials from .env
-if [ ! -f "$env_file" ]; then
-    echo "ERROR: .env file not found at $env_file" >&2
-    exit 1
+# Extract access token from credentials file
+# Try using jq if available, otherwise fall back to grep/sed
+if command -v jq &> /dev/null; then
+    ACCESS_TOKEN=$(jq -r '.claudeAiOauth.accessToken' "$CREDS_PATH" 2>/dev/null)
+else
+    # Fallback: parse JSON with grep and sed
+    ACCESS_TOKEN=$(grep -o '"accessToken":"[^"]*"' "$CREDS_PATH" | sed 's/"accessToken":"\([^"]*\)"/\1/')
 fi
 
-SESSION_KEY=$(grep "^CLAUDE_SESSION_KEY=" "$env_file" | cut -d= -f2 | tr -d ' \r\n')
-ORG_ID=$(grep "^CLAUDE_ORG_ID=" "$env_file" | cut -d= -f2 | tr -d ' \r\n')
-
-if [ -z "$SESSION_KEY" ]; then
-    echo "ERROR: CLAUDE_SESSION_KEY not found in .env" >&2
-    echo "Add: CLAUDE_SESSION_KEY=sk-ant-sid01-..." >&2
-    exit 1
-fi
-
-if [ -z "$ORG_ID" ]; then
-    echo "ERROR: CLAUDE_ORG_ID not found in .env" >&2
-    echo "Add: CLAUDE_ORG_ID=your-org-id" >&2
+# Verify we got a token
+if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+    echo "ERROR: Could not extract access token from credentials file" >&2
+    echo "Verify: $CREDS_PATH contains OAuth data" >&2
+    echo "Try re-authenticating with Claude Code." >&2
     exit 1
 fi
 
@@ -53,24 +52,20 @@ if [ "$1" = "--debug" ]; then
     DEBUG=1
 fi
 
-# Construct the API URL
-url="https://claude.ai/api/organizations/${ORG_ID}/usage"
+# OAuth API endpoint
+url="https://api.anthropic.com/api/oauth/usage"
 
 if [ $DEBUG -eq 1 ]; then
     echo "Fetching: $url" >&2
 fi
 
-# Make the request with sessionKey cookie and browser-like headers
+# Make the request with OAuth Bearer token
 response=$(curl -s -w "\n%{http_code}" \
-    -H "Cookie: sessionKey=$SESSION_KEY" \
-    -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" \
-    -H "Accept: application/json, text/plain, */*" \
-    -H "Accept-Language: en-US,en;q=0.9" \
-    -H "Referer: https://claude.ai/settings/usage" \
-    -H "Origin: https://claude.ai" \
-    -H "Sec-Fetch-Dest: empty" \
-    -H "Sec-Fetch-Mode: cors" \
-    -H "Sec-Fetch-Site: same-origin" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json" \
+    -H "User-Agent: claude-code/2.0.32" \
+    -H "anthropic-beta: oauth-2025-04-20" \
     "$url" 2>/dev/null)
 
 http_code=$(echo "$response" | tail -n1)
@@ -86,7 +81,8 @@ fi
 if [ "$http_code" != "200" ]; then
     echo "ERROR: HTTP $http_code" >&2
     if [ $DEBUG -eq 1 ]; then
-        echo "$body" >&2
+        echo "Response: $body" >&2
+        echo "Troubleshoot: Re-authenticate with Claude Code" >&2
     fi
     exit 1
 fi

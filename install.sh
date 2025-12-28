@@ -69,7 +69,6 @@ cp "$SCRIPT_DIR/src/statusline.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/update-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-code-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-pro-usage.sh" "$INSTALL_DIR/"
-cp "$SCRIPT_DIR/src/setup-env.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/claude-statusline.omp.json" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/VERSION" "$INSTALL_DIR/"
 
@@ -82,12 +81,9 @@ chmod +x "$INSTALL_DIR/statusline.sh"
 chmod +x "$INSTALL_DIR/update-usage.sh"
 chmod +x "$INSTALL_DIR/fetch-code-usage.sh"
 chmod +x "$INSTALL_DIR/fetch-pro-usage.sh"
-chmod +x "$INSTALL_DIR/setup-env.sh"
 
 echo -e "${GREEN}✓ Scripts are now executable${NC}"
 echo ""
-
-# Skip .env file handling - will be done interactively at the end
 
 # Backup and update settings.json
 echo "Updating Claude Code settings..."
@@ -142,35 +138,11 @@ echo "  • Scripts installed to: $INSTALL_DIR"
 echo "  • Settings updated in: $SETTINGS_FILE"
 echo ""
 
-# Setup .env interactively
+# OAuth credentials info
 echo ""
-echo "================================================"
-echo -e "${YELLOW}   Interactive .env Setup${NC}"
-echo "================================================"
-echo ""
-
-# Check if .env already exists (user might be re-running install)
-if [ -f "$INSTALL_DIR/.env" ]; then
-    echo -e "${YELLOW}Found existing .env file.${NC}"
-    echo ""
-    echo -n "Do you want to reconfigure it? (y/n): "
-    read -r reconfigure
-    if [ "$reconfigure" != "y" ]; then
-        echo ""
-        echo -e "${GREEN}✓ Keeping existing .env file${NC}"
-        echo ""
-        echo "You can reconfigure it later by running:"
-        echo "  bash $INSTALL_DIR/setup-env.sh"
-        echo ""
-    else
-        # Run setup-env.sh
-        bash "$INSTALL_DIR/setup-env.sh" "$INSTALL_DIR"
-    fi
-else
-    # Run setup-env.sh for first-time setup
-    bash "$INSTALL_DIR/setup-env.sh" "$INSTALL_DIR"
-fi
-
+echo -e "${GREEN}✓ Pro usage tracking uses OAuth credentials${NC}"
+echo -e "${GREEN}✓ Credentials automatically managed by Claude Code${NC}"
+echo -e "${GREEN}✓ No additional setup required!${NC}"
 echo ""
 echo -e "${GREEN}✓ Configuration complete${NC}"
 echo ""

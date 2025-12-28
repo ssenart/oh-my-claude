@@ -28,21 +28,15 @@ This will:
 - ✅ Check for required dependencies (oh-my-posh, jq, git, npx)
 - ✅ Install all scripts to `~/.claude/oh-my-claude/`
 - ✅ Backup and update your `~/.claude/settings.json`
-- ✅ **Interactively guide you** through setting up credentials
 - ✅ Make all scripts executable
 
-The installer will prompt you for your `sessionKey` and organization ID, making setup seamless!
+Pro usage tracking is automatic - no credentials needed!
 
 ### After Installation
 
 You're ready to use Claude Code with your custom status line! The installation script already configured everything.
 
-**To reconfigure credentials later:**
-```bash
-bash ~/.claude/oh-my-claude/setup-env.sh
-```
-
-For detailed credential setup, see `docs/GET_SESSION_KEY.md`
+See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed installation guide.
 
 ## Status Line Display
 
@@ -56,8 +50,8 @@ Your status line displays information-rich segments with powerline separators. S
 | 2 | **Git** | Yellow* | Branch and status | `main ` |
 | 3 | **Context** | Teal | Window usage percentage | `󰍛 24.7%` |
 | 4 | **Code** | Cyan | Session tokens (optional) | `# 14.3M` |
-| 5 | **Pro** | Pink | 5h/7d usage percentages | `󰓅 5h:90% 7d:27%` |
-| 6 | **Reset** | Purple | Time until limits reset | `󰔛 5h:2h1min 7d:Thu09:59` |
+| 5 | **Pro** | Pink | 5h/7d usage percentages (auto) | `󰓅 5h:90% 7d:27%` |
+| 6 | **Reset** | Purple | Time until limits reset (auto) | `󰔛 5h:2h1min 7d:Thu09:59` |
 | 7 | **Model** | Blue | Current AI model | `󰯉 Sonnet 4.5` |
 
 *Git segment color changes dynamically based on repository status (clean, dirty, ahead, behind, diverged)
@@ -86,7 +80,6 @@ oh-my-claude/
 
 **Installed files** (in `~/.claude/oh-my-claude/`):
 - All scripts from `src/`
-- `.env` - Your API credentials
 - `.usage_cache` - Auto-generated cache (JSON format)
 
 ## Common Tasks
@@ -265,7 +258,7 @@ If you need to modify the status line:
 ---
 
 **Created**: December 2024
-**Version**: 1.6
+**Version**: 1.7.0
 **Tools**: oh-my-posh, ccusage, bash
 
 For version history and detailed changes, see [CHANGELOG.md](CHANGELOG.md).
