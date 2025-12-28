@@ -1,0 +1,4 @@
+.env
+.cache/
+*.stackdump
+usage-limits.conf
