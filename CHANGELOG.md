@@ -1,6 +1,42 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.5 - Current (2024-12-28)
+## Version 1.6 - Current (2024-12-28)
+
+### Changed
+- **Removed OAuth token authentication**: Simplified to use only sessionKey authentication
+  - OAuth tokens are not supported for usage tracking endpoints
+  - Only sessionKey method works reliably for individual organizations
+- **Interactive credential setup**: Installation script now prompts for credentials interactively
+  - No need to manually edit `.env` after installation
+  - Guides users through extracting sessionKey from browser
+  - Suggests organization ID automatically
+
+### Added
+- `setup-env.sh` - Interactive credential configuration script
+  - Can be run standalone or called by install.sh
+  - Prompts for sessionKey and organization ID
+  - Creates `.env` file with proper formatting
+- `GET_SESSION_KEY.md` - Comprehensive guide for extracting browser credentials
+  - Step-by-step instructions for Chrome, Firefox, Safari
+  - Screenshots and detailed explanations
+  - Security notes and best practices
+
+### Removed
+- All references to `CLAUDE_CODE_OAUTH_TOKEN` from codebase
+- OAuth-related test scripts (10 files)
+- `.credentials.json` OAuth credential file
+
+### Documentation
+- Updated all documentation to reflect sessionKey-only authentication
+- Removed OAuth references from:
+  - README.md
+  - INSTALLATION.md
+  - PRO-USAGE-SETUP.md
+  - STATUS_LINE_DOCUMENTATION.md
+  - .env.example
+- Enhanced installation documentation with interactive setup flow
+
+## Version 1.5 (2024-12-28)
 
 ### Added
 - Context usage icon (󰍛) before percentage
@@ -203,4 +239,4 @@ Developed for Claude Code with:
 ---
 
 **Maintained**: December 2024
-**Last Updated**: 2024-12-27
+**Last Updated**: 2024-12-28

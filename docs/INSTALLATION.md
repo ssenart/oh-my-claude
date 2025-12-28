@@ -104,7 +104,7 @@ All commands should return version numbers without errors.
    - ✅ Make scripts executable
    - ✅ Backup your existing `settings.json`
    - ✅ Update `settings.json` with new statusLine command
-   - ✅ Create `.env` template for credentials
+   - ✅ **Interactively guide you** through setting up your `.env` file with credentials
 
 4. **Installation output**:
    ```
@@ -124,9 +124,6 @@ All commands should return version numbers without errors.
    Making scripts executable...
    ✓ Scripts are now executable
 
-   Setting up .env file...
-   ✓ Created .env from template
-
    Updating Claude Code settings...
    ✓ Backed up settings to /home/user/.claude/settings.json.backup.20251228_123456
    ✓ Updated settings.json with new statusLine.command
@@ -137,6 +134,27 @@ All commands should return version numbers without errors.
    ================================================
       Installation Complete!
    ================================================
+
+   ================================================
+      Interactive .env Setup
+   ================================================
+
+   Follow these steps to get your sessionKey:
+
+   1. Open https://claude.ai in your browser (logged in)
+   2. Press F12 to open Developer Tools
+   3. Go to Application → Cookies → https://claude.ai
+   4. Find 'sessionKey' and copy its value (starts with sk-ant-sid01-)
+
+   Paste your sessionKey here: [user input]
+
+   Now let's get your Organization ID:
+   Your organization ID from OAuth was: 5c4876d6-541a-4464-97b9-30fd7a8418c9
+   Use this org ID? (y/n): [user input]
+
+   ✓ .env file created successfully!
+
+   ✓ Configuration complete
    ```
 
 ### Method 2: Manual Installation
@@ -194,25 +212,31 @@ If you prefer manual installation or need to customize the process:
 
 ## Post-Installation Configuration
 
-### 1. Configure API Credentials
+The installation script **interactively sets up** your `.env` file during installation, so you're ready to go immediately!
 
-Edit `~/.claude/oh-my-claude/.env` and add your credentials:
+### If You Need to Reconfigure
+
+You can reconfigure your credentials at any time:
+
+```bash
+bash ~/.claude/oh-my-claude/setup-env.sh
+```
+
+This will guide you through:
+1. Getting your `sessionKey` from browser cookies
+2. Finding your organization ID
+
+See [GET_SESSION_KEY.md](GET_SESSION_KEY.md) for detailed instructions on extracting credentials from your browser.
+
+### Manual Configuration (Alternative)
+
+If you prefer to edit manually:
 
 ```bash
 nano ~/.claude/oh-my-claude/.env
 ```
 
-#### For Code Usage Tracking (Required)
-
-```bash
-# Get from: https://console.anthropic.com/settings/keys
-CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-YOUR_TOKEN_HERE
-```
-
-#### For Pro Usage Tracking (Optional)
-
-See [PRO-USAGE-SETUP.md](PRO-USAGE-SETUP.md) for detailed instructions.
-
+Required fields:
 ```bash
 # Get from browser DevTools → Application → Cookies → sessionKey
 CLAUDE_SESSION_KEY=sk-ant-sid01-YOUR_SESSION_KEY
@@ -221,7 +245,9 @@ CLAUDE_SESSION_KEY=sk-ant-sid01-YOUR_SESSION_KEY
 CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-### 2. Verify Installation
+For more details, see [PRO-USAGE-SETUP.md](PRO-USAGE-SETUP.md).
+
+### Verify Installation
 
 Run a test to ensure everything is working:
 
@@ -232,7 +258,7 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 
 You should see a colorful status line output with all segments.
 
-### 3. Test Individual Components
+### Test Individual Components
 
 ```bash
 # Test Code usage fetcher
@@ -497,8 +523,6 @@ If you encounter issues:
 - Most distributions include required tools
 - Use package manager for dependencies
 
-## Version Information
+## Version History
 
-- Installation script version: 1.0
-- Compatible with Claude Code: All versions
-- Last updated: 2025-12-28
+See [../CHANGELOG.md](../CHANGELOG.md) for complete version history and changes.

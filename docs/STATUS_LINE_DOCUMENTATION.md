@@ -92,7 +92,7 @@ The custom status line displays:
 - **Format**: `# XX.XM`
 - **Example**: `# 14.3M`
 - **Updates**: Every 60 seconds via background process
-- **Note**: Only appears when Code usage tracking is enabled with OAuth token
+- **Note**: Displays current session token count from Claude Code
 
 ### 5. Pro Usage (Pink)
 - **Icon**: `󰓅` (gauge/meter icon)
@@ -398,28 +398,6 @@ The git segment is configured with:
 - **ccusage**: https://ccusage.com/
 - **Nerd Fonts**: https://www.nerdfonts.com/
 
-## Changelog
+## Version History
 
-### v1.0 - Initial Implementation
-- Basic status line with model, directory, context
-- oh-my-posh integration
-
-### v1.1 - Usage Tracking
-- Added ccusage integration
-- Automatic 5-hour and weekly usage tracking
-- Configurable token limits
-
-### v1.2 - Git Integration
-- Git branch detection
-- Clean/dirty status indicators
-
-### v1.3 - Token Counts
-- Added absolute token counts alongside percentages
-- Format: `XX% (YYM/ZZM)`
-
-### v1.4 - Segment Reordering
-- Reordered segments for better workflow visibility
-- Added context icon (󰍛)
-
-### v1.5 - Documentation
-- Comprehensive documentation created
+See [CHANGELOG.md](../CHANGELOG.md) for complete version history and changes.

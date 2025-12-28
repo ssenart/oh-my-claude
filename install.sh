@@ -67,6 +67,7 @@ cp "$SCRIPT_DIR/src/statusline.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/update-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-code-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-pro-usage.sh" "$INSTALL_DIR/"
+cp "$SCRIPT_DIR/src/setup-env.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/claude-statusline.omp.json" "$INSTALL_DIR/"
 
 echo -e "${GREEN}✓ Copied all scripts to $INSTALL_DIR${NC}"
@@ -78,25 +79,12 @@ chmod +x "$INSTALL_DIR/statusline.sh"
 chmod +x "$INSTALL_DIR/update-usage.sh"
 chmod +x "$INSTALL_DIR/fetch-code-usage.sh"
 chmod +x "$INSTALL_DIR/fetch-pro-usage.sh"
+chmod +x "$INSTALL_DIR/setup-env.sh"
 
 echo -e "${GREEN}✓ Scripts are now executable${NC}"
 echo ""
 
-# Handle .env file
-echo "Setting up .env file..."
-if [ -f "$SCRIPT_DIR/.env" ]; then
-    # Copy existing .env
-    cp "$SCRIPT_DIR/.env" "$INSTALL_DIR/"
-    chmod 600 "$INSTALL_DIR/.env"
-    echo -e "${GREEN}✓ Copied existing .env file${NC}"
-else
-    # Create from .env.example
-    cp "$SCRIPT_DIR/.env.example" "$INSTALL_DIR/.env"
-    chmod 600 "$INSTALL_DIR/.env"
-    echo -e "${YELLOW}⚠ Created .env from template${NC}"
-    echo -e "${YELLOW}  You need to edit $INSTALL_DIR/.env with your credentials${NC}"
-fi
-echo ""
+# Skip .env file handling - will be done interactively at the end
 
 # Backup and update settings.json
 echo "Updating Claude Code settings..."
@@ -151,33 +139,43 @@ echo "  • Scripts installed to: $INSTALL_DIR"
 echo "  • Settings updated in: $SETTINGS_FILE"
 echo ""
 
-# Check if .env needs configuration
-if grep -q "sk-ant-oat01-\.\.\." "$INSTALL_DIR/.env" 2>/dev/null; then
-    echo -e "${YELLOW}⚠ NEXT STEPS:${NC}"
+# Setup .env interactively
+echo ""
+echo "================================================"
+echo -e "${YELLOW}   Interactive .env Setup${NC}"
+echo "================================================"
+echo ""
+
+# Check if .env already exists (user might be re-running install)
+if [ -f "$INSTALL_DIR/.env" ]; then
+    echo -e "${YELLOW}Found existing .env file.${NC}"
     echo ""
-    echo "1. Edit your .env file with credentials:"
-    echo "   nano $INSTALL_DIR/.env"
-    echo ""
-    echo "2. For Code usage tracking:"
-    echo "   - Get OAuth token from: https://console.anthropic.com/settings/keys"
-    echo "   - Add as CLAUDE_CODE_OAUTH_TOKEN in .env"
-    echo ""
-    echo "3. For Pro usage tracking (optional):"
-    echo "   - See docs/PRO-USAGE-SETUP.md for detailed setup"
-    echo "   - Add CLAUDE_SESSION_KEY and CLAUDE_ORG_ID to .env"
-    echo ""
-    echo "4. Test the status line:"
-    echo "   echo '{\"model\":{\"display_name\":\"Test\"},\"workspace\":{\"current_dir\":\"$PWD\"},\"output_style\":{\"name\":\"markdown\"},\"context_window\":{\"current_usage\":{\"input_tokens\":1000},\"context_window_size\":200000}}' | bash $INSTALL_DIR/statusline.sh"
-    echo ""
+    echo -n "Do you want to reconfigure it? (y/n): "
+    read -r reconfigure
+    if [ "$reconfigure" != "y" ]; then
+        echo ""
+        echo -e "${GREEN}✓ Keeping existing .env file${NC}"
+        echo ""
+        echo "You can reconfigure it later by running:"
+        echo "  bash $INSTALL_DIR/setup-env.sh"
+        echo ""
+    else
+        # Run setup-env.sh
+        bash "$INSTALL_DIR/setup-env.sh" "$INSTALL_DIR"
+    fi
 else
-    echo -e "${GREEN}✓ Configuration looks complete${NC}"
-    echo ""
-    echo "You can now use Claude Code and see the status line!"
-    echo ""
-    echo "Optional: Run a test with:"
-    echo "  echo '{\"model\":{\"display_name\":\"Test\"},\"workspace\":{\"current_dir\":\"$PWD\"},\"output_style\":{\"name\":\"markdown\"},\"context_window\":{\"current_usage\":{\"input_tokens\":1000},\"context_window_size\":200000}}' | bash $INSTALL_DIR/statusline.sh"
-    echo ""
+    # Run setup-env.sh for first-time setup
+    bash "$INSTALL_DIR/setup-env.sh" "$INSTALL_DIR"
 fi
+
+echo ""
+echo -e "${GREEN}✓ Configuration complete${NC}"
+echo ""
+echo "You can now use Claude Code and see the status line!"
+echo ""
+echo "Test the status line with:"
+echo "  echo '{\"model\":{\"display_name\":\"Test\"},\"workspace\":{\"current_dir\":\"$PWD\"},\"output_style\":{\"name\":\"markdown\"},\"context_window\":{\"current_usage\":{\"input_tokens\":1000},\"context_window_size\":200000}}' | bash $INSTALL_DIR/statusline.sh"
+echo ""
 
 echo "Documentation:"
 echo "  • README.md - Getting started guide"

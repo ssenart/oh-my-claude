@@ -28,23 +28,21 @@ This will:
 - ✅ Check for required dependencies (oh-my-posh, jq, git, npx)
 - ✅ Install all scripts to `~/.claude/oh-my-claude/`
 - ✅ Backup and update your `~/.claude/settings.json`
-- ✅ Create `.env` template for API credentials
+- ✅ **Interactively guide you** through setting up credentials
 - ✅ Make all scripts executable
+
+The installer will prompt you for your `sessionKey` and organization ID, making setup seamless!
 
 ### After Installation
 
-1. **Configure credentials** (edit `~/.claude/oh-my-claude/.env`):
-   ```bash
-   nano ~/.claude/oh-my-claude/.env
-   ```
+You're ready to use Claude Code with your custom status line! The installation script already configured everything.
 
-2. **For Code usage tracking** (required):
-   - Get OAuth token from: https://console.anthropic.com/settings/keys
-   - Add as `CLAUDE_CODE_OAUTH_TOKEN` in `.env`
+**To reconfigure credentials later:**
+```bash
+bash ~/.claude/oh-my-claude/setup-env.sh
+```
 
-3. **For Pro usage tracking** (optional):
-   - See `docs/PRO-USAGE-SETUP.md` for detailed setup
-   - Requires `CLAUDE_SESSION_KEY` and `CLAUDE_ORG_ID`
+For detailed credential setup, see `docs/GET_SESSION_KEY.md`
 
 ## Status Line Display
 
@@ -234,5 +232,7 @@ If you need to modify the status line:
 ---
 
 **Created**: December 2024
-**Version**: 1.5
+**Version**: 1.6
 **Tools**: oh-my-posh, ccusage, bash
+
+For version history and detailed changes, see [CHANGELOG.md](CHANGELOG.md).

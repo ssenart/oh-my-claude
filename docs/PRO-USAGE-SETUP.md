@@ -51,9 +51,8 @@ You need two values from your browser when logged into claude.ai:
 Edit `.env` in the repository:
 
 ```bash
-CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-...  # (existing, keep as is)
-CLAUDE_SESSION_KEY=sk-ant-sid01-...       # (add this)
-CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  # (add this)
+CLAUDE_SESSION_KEY=sk-ant-sid01-...
+CLAUDE_ORG_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
 ### 3. Copy Files to ~/.claude
@@ -264,8 +263,8 @@ A: Yes, rename `fetch-pro-usage.sh` to disable:
 mv ~/.claude/fetch-pro-usage.sh ~/.claude/fetch-pro-usage.sh.disabled
 ```
 
-**Q: Does this use the OAuth token?**
-A: No, the OAuth token is for Claude Code. Pro usage uses the sessionKey cookie.
+**Q: Does this use OAuth authentication?**
+A: No, Pro usage tracking uses the sessionKey cookie from your browser.
 
 **Q: Why percentages only for Pro (no token counts)?**
 A: The Claude web API only returns percentage utilization, not absolute token counts.
@@ -279,6 +278,6 @@ A: The API returns both 5-hour and 7-day windows. There's no monthly endpoint cu
 **Q: Is this rate limited?**
 A: Updates run every 60 seconds. Claude's API may have rate limits, but this frequency is conservative.
 
-## Changelog
+## Version History
 
-- **2025-12-28**: Initial implementation using sessionKey authentication and bash/curl
+See [../CHANGELOG.md](../CHANGELOG.md) for complete version history and changes.
