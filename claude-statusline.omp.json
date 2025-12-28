@@ -47,7 +47,15 @@
           "powerline_symbol": "\uE0B0",
           "background": "#00897b",
           "foreground": "#ffffff",
-          "template": " {{ if .Env.CLAUDE_CONTEXT }} \uf035b {{ .Env.CLAUDE_CONTEXT }}{{ end }} "
+          "template": " {{ if .Env.CLAUDE_CONTEXT }}󰍛 {{ .Env.CLAUDE_CONTEXT }}{{ end }} "
+        },
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "\uE0B0",
+          "background": "#00d9ff",
+          "foreground": "#ffffff",
+          "template": " {{ if .Env.CLAUDE_CODE_USAGE }}# {{ .Env.CLAUDE_CODE_USAGE }}{{ end }} "
         },
         {
           "type": "text",
@@ -55,7 +63,7 @@
           "powerline_symbol": "\uE0B0",
           "background": "#ff8c94",
           "foreground": "#ffffff",
-          "template": " {{ if .Env.CLAUDE_USAGE }} \uf080 {{ .Env.CLAUDE_USAGE }}{{ end }} "
+          "template": " {{ if .Env.CLAUDE_PRO_USAGE }}󰓅 {{ .Env.CLAUDE_PRO_USAGE }}{{ end }} "
         },
         {
           "type": "text",
@@ -63,7 +71,7 @@
           "powerline_symbol": "\uE0B0",
           "background": "#9d4edd",
           "foreground": "#ffffff",
-          "template": " {{ if .Env.CLAUDE_RESET }} \uf051b {{ .Env.CLAUDE_RESET }}{{ end }} "
+          "template": " {{ if .Env.CLAUDE_RESET }}󰔛 {{ .Env.CLAUDE_RESET }}{{ end }} "
         },
         {
           "type": "text",

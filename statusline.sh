@@ -92,7 +92,8 @@ else
     pro_seven_day_usage=""
 fi
 
-# Format usage display
+# Format Code usage display (tokens only)
+code_usage_display=""
 if [ -n "$session_tokens" ] && [ "$session_tokens" != "0" ]; then
     # Format Code tokens in millions (M)
     if command -v bc >/dev/null 2>&1; then
@@ -100,15 +101,13 @@ if [ -n "$session_tokens" ] && [ "$session_tokens" != "0" ]; then
     else
         session_m=$(awk "BEGIN {val=$session_tokens/1000000; if(val==int(val)) printf \"%.0f\", val; else printf \"%.1f\", val}")
     fi
+    code_usage_display="${session_m}M"
+fi
 
-    usage_display="Code: ${session_m}M"
-
-    # Add Pro usage if available
-    if [ -n "$pro_five_hour_usage" ] && [ -n "$pro_seven_day_usage" ]; then
-        usage_display="${usage_display} | Pro 5h:${pro_five_hour_usage}% 7d:${pro_seven_day_usage}%"
-    fi
-else
-    usage_display=""
+# Format Pro usage display (separate)
+pro_usage_display=""
+if [ -n "$pro_five_hour_usage" ] && [ -n "$pro_seven_day_usage" ]; then
+    pro_usage_display="5h:${pro_five_hour_usage}% 7d:${pro_seven_day_usage}%"
 fi
 
 # Format reset times display
@@ -131,7 +130,7 @@ if [ -n "$pro_five_hour_resets" ] && [ -n "$pro_seven_day_resets" ]; then
             if [ "$diff_sec" -gt 0 ]; then
                 hours=$((diff_sec / 3600))
                 mins=$(((diff_sec % 3600) / 60))
-                five_hour_display="${hours}h ${mins}min"
+                five_hour_display="${hours}h${mins}min"
             else
                 five_hour_display="resetting..."
             fi
@@ -144,7 +143,7 @@ if [ -n "$pro_five_hour_resets" ] && [ -n "$pro_seven_day_resets" ]; then
         seven_day_time=$(date -d "$seven_day_clean" "+%H:%M" 2>/dev/null || date -jf "%Y-%m-%dT%H:%M:%S%z" "$seven_day_clean" "+%H:%M" 2>/dev/null)
 
         if [ -n "$seven_day_day" ] && [ -n "$seven_day_time" ]; then
-            seven_day_display="${seven_day_day} ${seven_day_time}"
+            seven_day_display="${seven_day_day}${seven_day_time}"
         else
             seven_day_display="?"
         fi
@@ -160,7 +159,8 @@ export CLAUDE_GIT_BRANCH="$git_branch"
 export CLAUDE_GIT_STATUS="$git_status"
 export CLAUDE_STYLE="$style"
 export CLAUDE_CONTEXT="$context_pct"
-export CLAUDE_USAGE="$usage_display"
+export CLAUDE_CODE_USAGE="$code_usage_display"
+export CLAUDE_PRO_USAGE="$pro_usage_display"
 export CLAUDE_RESET="$reset_display"
 
 # Path to oh-my-posh config file
@@ -174,7 +174,8 @@ env -i \
   CLAUDE_GIT_STATUS="$CLAUDE_GIT_STATUS" \
   CLAUDE_STYLE="$CLAUDE_STYLE" \
   CLAUDE_CONTEXT="$CLAUDE_CONTEXT" \
-  CLAUDE_USAGE="$CLAUDE_USAGE" \
+  CLAUDE_CODE_USAGE="$CLAUDE_CODE_USAGE" \
+  CLAUDE_PRO_USAGE="$CLAUDE_PRO_USAGE" \
   CLAUDE_RESET="$CLAUDE_RESET" \
   PATH="$PATH" \
   oh-my-posh print primary --config "$config_file" --pwd "$cwd"
