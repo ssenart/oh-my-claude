@@ -2,6 +2,18 @@
 
 Complete step-by-step guide to installing oh-my-claude status line for Claude Code.
 
+## What You'll Get
+
+![Status Line Example](example.png)
+
+After installation, you'll have a rich status line showing:
+- **Path** (orange) - Current directory
+- **Git** (yellow) - Branch and repository status
+- **Context** (teal) - Conversation window usage
+- **Pro Usage** (pink) - 5-hour and 7-day usage percentages
+- **Reset Times** (purple) - When usage limits reset
+- **Model** (blue) - Current AI model
+
 ## Prerequisites
 
 Before installing, ensure you have these dependencies:

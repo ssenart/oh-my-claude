@@ -1,14 +1,25 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.5 - Current (2024-12-27)
+## Version 1.5 - Current (2024-12-28)
 
 ### Added
 - Context usage icon (󰍛) before percentage
+- Visual example screenshot (`docs/example.png`) showcasing the status line
 - Comprehensive documentation suite:
   - `STATUS_LINE_DOCUMENTATION.md` - Complete technical reference
   - `STATUS_LINE_QUICK_REFERENCE.md` - Common operations guide
+  - `EXAMPLES.md` - Visual examples with detailed segment breakdown
+  - `INSTALLATION.md` - Comprehensive installation guide
+  - `PRO-USAGE-SETUP.md` - Pro usage tracking setup guide
+  - `INDEX.md` - Documentation navigation index
+  - `CLAUDE.md` - Architecture guide for developers
   - `README.md` - Overview and getting started
   - `CHANGELOG.md` - This file
+
+### Enhanced
+- All documentation files now include the visual example with detailed segment explanations
+- README features screenshot at the top with segment breakdown table
+- EXAMPLES.md includes detailed color codes, icons, and real-world workflow examples
 
 ## Version 1.4 (2024-12-27)
 

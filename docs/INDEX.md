@@ -2,6 +2,8 @@
 
 Complete guide to the custom Claude Code status line implementation.
 
+![Status Line Example](example.png)
+
 ## Quick Links
 
 | File | Purpose | Best For |

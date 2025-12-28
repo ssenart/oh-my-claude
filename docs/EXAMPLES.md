@@ -2,6 +2,25 @@
 
 This document shows various states of the custom status line.
 
+## Visual Example
+
+![Status Line Example](example.png)
+
+### Segment Breakdown
+
+The screenshot above shows a typical status line with all segments visible:
+
+| Segment | Content | Color | Icon | Description |
+|---------|---------|-------|------|-------------|
+| **1. Path** | `oh-my-claude` | Orange (`#ff6b35`) | `` | Current directory name |
+| **2. Git** | `main ` | Yellow (`#fffb38`) | `` | Git branch with clean status indicator |
+| **3. Context** | `24.7%` | Teal (`#00897b`) | `󰍛` | Context window usage (24.7% of 200K tokens) |
+| **4. Pro Usage** | `5h:90% 7d:27%` | Pink (`#ff8c94`) | `󰓅` | Pro usage: 90% in last 5h, 27% in last 7d |
+| **5. Reset Times** | `5h:2h1min 7d:Thu09:59` | Purple (`#9d4edd`) | `󰔛` | When limits reset: 5h in 2h1min, 7d on Thu 09:59 |
+| **6. Model** | `Sonnet 4.5` | Blue (`#3a86ff`) | `󰯉` | Currently active AI model |
+
+**Note**: The Code usage segment (session tokens) is optional and appears between Context and Pro when Code usage tracking is enabled.
+
 ## Basic Examples
 
 ### Outside Git Repository

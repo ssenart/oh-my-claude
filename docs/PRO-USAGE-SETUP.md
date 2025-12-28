@@ -4,15 +4,13 @@ This guide explains how to set up automated tracking of your Claude Pro web usag
 
 ## What You Get
 
-Your status line will now show both Code and Pro usage:
-```
-Code: 7.0M | Pro 5h:36% 7d:20%
-      ^^^^^      ^^^^^^^^^^^^^^
-      Session    Pro usage from API
-      tokens     (5-hour and 7-day windows)
-```
+![Status Line Example](example.png)
 
-Clean and simple - just what you need to know!
+The status line shows Pro usage percentages and reset times:
+- **Pro Usage (pink)**: `󰓅 5h:90% 7d:27%` - Usage in 5-hour and 7-day windows
+- **Reset Times (purple)**: `󰔛 5h:2h1min 7d:Thu09:59` - When limits reset
+
+This gives you real-time visibility into your Claude Pro usage right in Claude Code!
 
 ## How It Works
 

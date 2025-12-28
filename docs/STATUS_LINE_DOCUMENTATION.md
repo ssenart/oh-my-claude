@@ -2,14 +2,22 @@
 
 This document describes the custom status line implementation for Claude Code, featuring oh-my-posh integration, automatic usage tracking via ccusage, and git status indicators.
 
+## Visual Example
+
+![Status Line Example](example.png)
+
+The screenshot above shows all segments in action: Path (orange), Git (yellow), Context (teal), Pro Usage (pink), Reset Times (purple), and Model (blue).
+
 ## Overview
 
 The custom status line displays:
-1. **Directory** - Current working directory name
+1. **Path** - Current working directory name
 2. **Git Branch + Status** - Git branch with clean/dirty indicator (when in a git repo)
 3. **Context Usage** - Conversation context window usage percentage
-4. **Session & Weekly Limits** - Token usage with percentages and absolute counts
-5. **Model** - Current Claude model being used
+4. **Code Usage** - Session token count (optional, cyan)
+5. **Pro Usage** - 5-hour and 7-day usage percentages (pink)
+6. **Reset Times** - Countdown timers for usage limit resets (purple)
+7. **Model** - Current Claude model being used
 
 ## Architecture
 
@@ -73,19 +81,40 @@ The custom status line displays:
 - **Color**: `#00897b` (teal)
 - **Style**: Powerline
 - **Shows**: Conversation context window usage percentage
-- **Example**: `󰍛 45%`
+- **Example**: `󰍛 24.7%`
 - **Calculation**: `(input_tokens + cache_creation_tokens + cache_read_tokens) / context_window_size * 100`
 
-### 4. Session & Weekly Usage (Pink)
-- **Icon**: `` (chart/statistics icon)
-- **Color**: `#ff8c94` (pink)
-- **Style**: Powerline (no trailing symbol)
-- **Shows**: Both 5-hour session and weekly token usage with percentages and absolute counts
-- **Format**: `5h:XX% (YYM/ZZM) W:XX% (YYM/ZZM)`
-- **Example**: ` 5h:76% (12.2M/16M) W:17% (12.4M/72M)`
+### 4. Code Usage (Cyan) - Optional
+- **Icon**: `#` (token count indicator)
+- **Color**: `#00bcd4` (cyan)
+- **Style**: Powerline
+- **Shows**: Claude Code session token count
+- **Format**: `# XX.XM`
+- **Example**: `# 14.3M`
 - **Updates**: Every 60 seconds via background process
+- **Note**: Only appears when Code usage tracking is enabled with OAuth token
 
-### 5. Model (Blue)
+### 5. Pro Usage (Pink)
+- **Icon**: `󰓅` (gauge/meter icon)
+- **Color**: `#ff8c94` (pink)
+- **Style**: Powerline
+- **Shows**: Claude Pro usage percentages for 5-hour and 7-day windows
+- **Format**: `5h:XX% 7d:YY%`
+- **Example**: `󰓅 5h:90% 7d:27%`
+- **Updates**: Every 60 seconds via background process
+- **Note**: Requires `CLAUDE_SESSION_KEY` and `CLAUDE_ORG_ID` in `.env`
+
+### 6. Reset Times (Purple)
+- **Icon**: `󰔛` (clock/timer icon)
+- **Color**: `#9d4edd` (purple)
+- **Style**: Powerline
+- **Shows**: Countdown timers for when Pro usage limits reset
+- **Format**: `5h:XXhYYmin 7d:DayHH:MM`
+- **Example**: `󰔛 5h:2h1min 7d:Thu09:59`
+- **Updates**: Every 60 seconds via background process
+- **Note**: Shows time remaining for 5h window and absolute reset time for 7d window
+
+### 7. Model (Blue)
 - **Icon**: `󰯉` (AI/brain icon)
 - **Color**: `#3a86ff` (blue)
 - **Style**: Diamond with transparent leading powerline

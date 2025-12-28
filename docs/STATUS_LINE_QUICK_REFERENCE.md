@@ -88,15 +88,18 @@ bash ~/.claude/update-usage.sh
 
 ## Example Status Line Output
 
-```
- oh-my-claude  main 󰍛 45% # 14.3M 󰓅 5h:73% 7d:24% 󰔛 5h:3h7min 7d:Thu09:59 󰯉 Sonnet 4.5
-```
+![Status Line Example](example.png)
 
-Where:
-- ** oh-my-claude** = Current directory (path segment, orange)
-- ** main** = Git branch with upstream status (yellow, dynamic colors based on status)
-- **󰍛 45%** = Context window 45% full (teal)
-- **# 14.3M** = Code session tokens (cyan)
-- **󰓅 5h:73% 7d:24%** = Pro usage percentages (pink)
-- **󰔛 5h:3h7min 7d:Thu09:59** = Reset time countdowns (purple)
-- **󰯉 Sonnet 4.5** = Current model (blue)
+### Segment Details
+
+| Segment | Content | Description |
+|---------|---------|-------------|
+| ** oh-my-claude** | Path | Current directory (orange) |
+| ** main ** | Git | Branch with clean status (yellow) |
+| **󰍛 24.7%** | Context | Context window usage (teal) |
+| **󰓅 5h:90% 7d:27%** | Pro Usage | 5-hour: 90%, 7-day: 27% (pink) |
+| **󰔛 5h:2h1min 7d:Thu09:59** | Reset Times | 5h resets in 2h1min, 7d resets Thu 09:59 (purple) |
+| **󰯉 Sonnet 4.5** | Model | Current AI model (blue) |
+
+**Optional Segment**:
+- **# 14.3M** = Code session tokens (cyan) - appears when Code usage tracking is enabled

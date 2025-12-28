@@ -1,5 +1,7 @@
 # Claude Code Custom Status Line
 
+![Example Status Line](docs/example.png)
+
 A fully customized status line for Claude Code featuring:
 - 🎨 Oh-my-posh powered theming with powerline separators
 - 📊 Automatic token usage tracking (Code session + Pro web usage)
@@ -46,20 +48,21 @@ This will:
 
 ## Status Line Display
 
-Your status line will display:
+Your status line displays information-rich segments with powerline separators. See the image at the top for a visual example, or check [docs/EXAMPLES.md](docs/EXAMPLES.md) for detailed breakdowns.
 
-```
- path  branch 󰍛 45% # 14.3M 󰓅 5h:73% 7d:24% 󰔛 5h:3h7min 7d:Thu09:59 󰯉 Model
-```
+### Segments (left to right)
 
-Segments (left to right):
-1. **Path** - Current directory (orange)
-2. **Git** - Branch and status (yellow, dynamic colors)
-3. **Context** - Window usage percentage (teal)
-4. **Code** - Session tokens (cyan)
-5. **Pro** - 5h/7d usage percentages (pink)
-6. **Reset** - Time until limits reset (purple)
-7. **Model** - Current AI model (blue)
+| # | Segment | Color | Description | Example |
+|---|---------|-------|-------------|---------|
+| 1 | **Path** | Orange | Current directory | `oh-my-claude` |
+| 2 | **Git** | Yellow* | Branch and status | `main ` |
+| 3 | **Context** | Teal | Window usage percentage | `󰍛 24.7%` |
+| 4 | **Code** | Cyan | Session tokens (optional) | `# 14.3M` |
+| 5 | **Pro** | Pink | 5h/7d usage percentages | `󰓅 5h:90% 7d:27%` |
+| 6 | **Reset** | Purple | Time until limits reset | `󰔛 5h:2h1min 7d:Thu09:59` |
+| 7 | **Model** | Blue | Current AI model | `󰯉 Sonnet 4.5` |
+
+*Git segment color changes dynamically based on repository status (clean, dirty, ahead, behind, diverged)
 
 ## Project Structure
 
