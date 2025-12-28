@@ -1,6 +1,58 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.7.0 - Current (2024-12-29)
+## Version 1.8.0 - Current (2024-12-29)
+
+### Major Changes
+- **Web Installer**: Modern curl-based installation method
+  - Install directly from GitHub without cloning repository
+  - One-command installation: `curl -s https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh | bash`
+  - Custom directory support: `-d` flag for custom installation locations
+  - Automatic file downloads with retry logic
+  - Now the primary recommended installation method
+
+### Added
+- **`install.sh`** - New web installer
+  - Downloads files from GitHub raw URLs
+  - Supports `-d/--dir` flag for custom installation directory
+  - Retry logic (3 attempts with exponential backoff)
+  - Automatic cleanup with trap handlers
+  - Version detection (fresh install vs upgrade)
+  - Colored progress output with clear status messages
+  - Comprehensive error handling
+- **`local-install.sh`** - Renamed from old install.sh
+  - For local development workflow
+  - Run after cloning repository
+  - All original functionality preserved
+
+### Changed
+- **Installation workflow**: Web installation is now primary method
+  - `README.md` - Web install shown first with curl command
+  - `docs/INSTALLATION.md` - Comprehensive web install guide with troubleshooting
+  - Project structure updated to show dual installers
+
+### Documentation Updates
+- **README.md**:
+  - Web installation as recommended method
+  - Custom directory installation example
+  - Security note about script review
+  - Local installation as alternative
+  - Updated project structure
+- **docs/INSTALLATION.md**:
+  - Method 1: Web Installation (Recommended)
+  - Method 2: Local Installation (For Development)
+  - Method 3: Manual Installation
+  - Troubleshooting for web install
+  - Two-step review option for security-conscious users
+
+### Benefits
+- **Easier installation**: No git clone required
+- **Always latest**: Downloads current version from GitHub
+- **Faster onboarding**: Single command to get started
+- **Flexible**: Supports custom installation directories
+- **Secure**: Only writes to home directory, never requires sudo
+- **Reliable**: Retry logic handles transient network failures
+
+## Version 1.7.0 (2024-12-29)
 
 ### Major Changes
 - **OAuth Authentication Migration**: Migrated from session key to OAuth credentials

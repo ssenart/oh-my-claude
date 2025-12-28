@@ -14,23 +14,38 @@ A fully customized status line for Claude Code featuring:
 
 > **📖 Full Installation Guide**: See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed installation instructions, troubleshooting, and platform-specific notes.
 
-### Quick Install
+### Quick Install (Recommended)
 
-Run the installation script from the repository root:
+Install directly from GitHub without cloning:
 
 ```bash
-git clone https://github.com/ssenart/oh-my-claude.git
-cd oh-my-claude
-bash install.sh
+curl -s https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh | bash
+```
+
+**Custom installation directory:**
+```bash
+curl -s https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh | bash -s -- -d ~/.custom/location
 ```
 
 This will:
 - ✅ Check for required dependencies (oh-my-posh, jq, git, npx)
-- ✅ Install all scripts to `~/.claude/oh-my-claude/`
+- ✅ Download and install all scripts to `~/.claude/oh-my-claude/`
 - ✅ Backup and update your `~/.claude/settings.json`
 - ✅ Make all scripts executable
 
 Pro usage tracking is automatic - no credentials needed!
+
+**Security Note**: The installer only writes to your home directory and never requests sudo access. You can review the script before running: [View install.sh](https://github.com/ssenart/oh-my-claude/blob/main/install.sh)
+
+### Alternative: Local Installation
+
+For development or if you prefer to clone the repository:
+
+```bash
+git clone https://github.com/ssenart/oh-my-claude.git
+cd oh-my-claude
+bash local-install.sh
+```
 
 ### After Installation
 
@@ -60,7 +75,8 @@ Your status line displays information-rich segments with powerline separators. S
 
 ```
 oh-my-claude/
-├── install.sh                    # Installation script
+├── install.sh                    # Web installer (downloads from GitHub)
+├── local-install.sh              # Local installer (for development)
 ├── src/                          # Source files
 │   ├── statusline.sh             # Main status line script
 │   ├── update-usage.sh           # Background usage updater

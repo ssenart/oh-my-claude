@@ -84,7 +84,85 @@ All commands should return version numbers without errors.
 
 ## Installation
 
-### Method 1: Automated Installation (Recommended)
+### Method 1: Web Installation (Recommended)
+
+Install directly from GitHub without cloning the repository:
+
+1. **Run the web installer**:
+   ```bash
+   curl -s https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh | bash
+   ```
+
+2. **Custom installation directory** (optional):
+   ```bash
+   curl -s https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh | bash -s -- -d ~/.custom/location
+   ```
+
+3. **The installer will**:
+   - ✅ Check for required dependencies
+   - ✅ Download all scripts from GitHub
+   - ✅ Create `~/.claude/oh-my-claude/` directory
+   - ✅ Install scripts and configuration files
+   - ✅ Make scripts executable
+   - ✅ Backup your existing `settings.json`
+   - ✅ Update `settings.json` with new statusLine command
+   - ✅ Pro usage tracking works automatically with OAuth credentials
+
+4. **Installation output**:
+   ```
+   ================================================
+      oh-my-claude Web Installer
+   ================================================
+
+   Checking dependencies...
+   ✓ All dependencies found
+
+   Downloading from GitHub...
+   ✓ statusline.sh
+   ✓ update-usage.sh
+   ✓ fetch-code-usage.sh
+   ✓ fetch-pro-usage.sh
+   ✓ claude-statusline.omp.json
+   ✓ VERSION
+
+   Installing oh-my-claude version 1.7.0
+
+   Installing to /home/user/.claude/oh-my-claude...
+   ✓ Files copied
+   ✓ Permissions set
+
+   Updating settings...
+   ✓ Backed up settings to settings.json.backup.20251229_123456
+   ✓ Configuration updated
+
+   ================================================
+      Installation Complete!
+   ================================================
+
+   Location: /home/user/.claude/oh-my-claude
+   Version: 1.7.0
+
+   Next steps:
+     1. Restart Claude Code (if running)
+     2. Status line will appear automatically
+
+   Documentation: https://github.com/ssenart/oh-my-claude
+   ```
+
+**Security Note**: The installer only writes to your home directory and never requests sudo access. You can review the script before running: [View install.sh](https://github.com/ssenart/oh-my-claude/blob/main/install.sh)
+
+**Troubleshooting**:
+- If download fails: Check your internet connection and retry
+- If you prefer to review the script first:
+  ```bash
+  curl -O https://raw.githubusercontent.com/ssenart/oh-my-claude/main/install.sh
+  cat install.sh  # Review the script
+  bash install.sh  # Run after review
+  ```
+
+### Method 2: Local Installation (For Development)
+
+If you prefer to clone the repository or are developing locally:
 
 1. **Clone the repository**:
    ```bash
@@ -92,9 +170,9 @@ All commands should return version numbers without errors.
    cd oh-my-claude
    ```
 
-2. **Run the installation script**:
+2. **Run the local installation script**:
    ```bash
-   bash install.sh
+   bash local-install.sh
    ```
 
 3. **The script will**:
@@ -142,7 +220,7 @@ All commands should return version numbers without errors.
    ✓ Configuration complete
    ```
 
-### Method 2: Manual Installation
+### Method 3: Manual Installation
 
 If you prefer manual installation or need to customize the process:
 
