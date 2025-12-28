@@ -19,22 +19,28 @@ This is a custom status line implementation for Claude Code featuring real-time 
 
 2. **update-usage.sh** - Background updater (runs async)
    - Called by statusline.sh when cache is >60s old
-   - Runs `npx ccusage blocks --active --json` for 5-hour session data
-   - Runs `npx ccusage weekly --json` for weekly usage data
-   - Calculates percentages against configured limits
-   - Writes to `.usage_cache` in format: `session_pct:weekly_pct:session_tokens:weekly_tokens:five_hour_limit:weekly_limit`
+   - Runs `npx ccusage blocks --active --json` for current session tokens only
+   - Runs `bash fetch-pro-usage.sh` for Claude Pro web usage percentages
+   - Writes to `.usage_cache` in JSON format with timestamp
 
-3. **claude-statusline.omp.json** - Oh-my-posh theme configuration
+3. **fetch-pro-usage.sh** - Pro usage fetcher (optional)
+   - Uses curl to call Claude web API
+   - Authenticates with sessionKey cookie from .env
+   - Fetches from `https://claude.ai/api/organizations/{ORG_ID}/usage`
+   - Returns Pro usage percentages for 5-hour and 7-day windows
+
+4. **claude-statusline.omp.json** - Oh-my-posh theme configuration
    - Defines powerline-style segments with colors and icons
    - Reads data from `CLAUDE_*` environment variables
    - Uses diamond and powerline styles for visual separation
 
 ### Key Design Decisions
 
-- **Non-blocking updates**: statusline.sh never waits for ccusage calls (which take 2-5s). It always reads cached data immediately, triggering background updates only when cache is stale.
-- **Cache format**: Colon-delimited string allows fast parsing with `cut` instead of JSON parsing overhead.
+- **Non-blocking updates**: statusline.sh never waits for ccusage/API calls (which take 2-5s). It always reads cached data immediately, triggering background updates only when cache is stale.
+- **Cache format**: JSON with timestamp for clarity and easy inspection/debugging.
 - **Git detection**: Uses both `.git` directory check and `git rev-parse` to handle normal repos and worktrees.
-- **Fallback math**: Supports both `bc` and `awk` for percentage calculations to work across different environments.
+- **Simplified metrics**: Only shows current session tokens from Code (no percentages/limits - they were inaccurate) and Pro percentages from web API.
+- **Pure bash Pro fetching**: Uses curl with browser-like headers to fetch Pro usage, no Node.js/Puppeteer needed.
 
 ## Common Commands
 

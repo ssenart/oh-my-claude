@@ -70,43 +70,87 @@ if [ -f "$cache_file" ]; then
         bash "$update_script" &>/dev/null &
     fi
     # Always use cached data (even if slightly stale)
-    # Format: session_pct:weekly_pct:session_tokens:weekly_tokens:five_hour_limit:weekly_limit
-    cached_data=$(cat "$cache_file" 2>/dev/null || echo "::::::")
-    session_usage=$(echo "$cached_data" | cut -d: -f1)
-    weekly_usage=$(echo "$cached_data" | cut -d: -f2)
-    session_tokens=$(echo "$cached_data" | cut -d: -f3)
-    weekly_tokens=$(echo "$cached_data" | cut -d: -f4)
-    five_hour_limit=$(echo "$cached_data" | cut -d: -f5)
-    weekly_limit=$(echo "$cached_data" | cut -d: -f6)
+    # Read JSON cache
+    if [ -f "$cache_file" ]; then
+        session_tokens=$(jq -r '.code.session_tokens // 0' "$cache_file" 2>/dev/null)
+        pro_five_hour_usage=$(jq -r '.pro.five_hour_pct // empty' "$cache_file" 2>/dev/null)
+        pro_seven_day_usage=$(jq -r '.pro.seven_day_pct // empty' "$cache_file" 2>/dev/null)
+        pro_five_hour_resets=$(jq -r '.pro.five_hour_resets_at // empty' "$cache_file" 2>/dev/null)
+        pro_seven_day_resets=$(jq -r '.pro.seven_day_resets_at // empty' "$cache_file" 2>/dev/null)
+    else
+        session_tokens=""
+        pro_five_hour_usage=""
+        pro_seven_day_usage=""
+        pro_five_hour_resets=""
+        pro_seven_day_resets=""
+    fi
 else
     # No cache, trigger update and use empty data for now
     bash "$update_script" &>/dev/null &
-    session_usage=""
-    weekly_usage=""
     session_tokens=""
-    weekly_tokens=""
-    five_hour_limit=""
-    weekly_limit=""
+    pro_five_hour_usage=""
+    pro_seven_day_usage=""
 fi
 
-# Format usage display with token counts
-if [ -n "$session_usage" ] && [ -n "$weekly_usage" ] && [ -n "$session_tokens" ] && [ -n "$weekly_tokens" ]; then
-    # Format tokens in millions (M)
+# Format usage display
+if [ -n "$session_tokens" ] && [ "$session_tokens" != "0" ]; then
+    # Format Code tokens in millions (M)
     if command -v bc >/dev/null 2>&1; then
         session_m=$(echo "scale=1; $session_tokens / 1000000" | bc | sed 's/\.0$//')
-        weekly_m=$(echo "scale=1; $weekly_tokens / 1000000" | bc | sed 's/\.0$//')
-        session_limit_m=$(echo "scale=0; $five_hour_limit / 1000000" | bc)
-        weekly_limit_m=$(echo "scale=0; $weekly_limit / 1000000" | bc)
     else
         session_m=$(awk "BEGIN {val=$session_tokens/1000000; if(val==int(val)) printf \"%.0f\", val; else printf \"%.1f\", val}")
-        weekly_m=$(awk "BEGIN {val=$weekly_tokens/1000000; if(val==int(val)) printf \"%.0f\", val; else printf \"%.1f\", val}")
-        session_limit_m=$(awk "BEGIN {printf \"%.0f\", $five_hour_limit/1000000}")
-        weekly_limit_m=$(awk "BEGIN {printf \"%.0f\", $weekly_limit/1000000}")
     fi
 
-    usage_display="5h:${session_usage}% (${session_m}M/${session_limit_m}M) W:${weekly_usage}% (${weekly_m}M/${weekly_limit_m}M)"
+    usage_display="Code: ${session_m}M"
+
+    # Add Pro usage if available
+    if [ -n "$pro_five_hour_usage" ] && [ -n "$pro_seven_day_usage" ]; then
+        usage_display="${usage_display} | Pro 5h:${pro_five_hour_usage}% 7d:${pro_seven_day_usage}%"
+    fi
 else
     usage_display=""
+fi
+
+# Format reset times display
+reset_display=""
+if [ -n "$pro_five_hour_resets" ] && [ -n "$pro_seven_day_resets" ]; then
+    # Calculate time until 5-hour reset
+    if command -v date >/dev/null 2>&1; then
+        # Parse reset time (remove milliseconds for compatibility)
+        five_hour_clean=$(echo "$pro_five_hour_resets" | sed 's/\.[0-9]*+/+/')
+        seven_day_clean=$(echo "$pro_seven_day_resets" | sed 's/\.[0-9]*+/+/')
+
+        # Get current time and reset time in seconds since epoch
+        now_sec=$(date +%s)
+        five_hour_sec=$(date -d "$five_hour_clean" +%s 2>/dev/null || date -jf "%Y-%m-%dT%H:%M:%S%z" "$five_hour_clean" +%s 2>/dev/null)
+
+        if [ -n "$five_hour_sec" ]; then
+            # Calculate difference
+            diff_sec=$((five_hour_sec - now_sec))
+
+            if [ "$diff_sec" -gt 0 ]; then
+                hours=$((diff_sec / 3600))
+                mins=$(((diff_sec % 3600) / 60))
+                five_hour_display="${hours}h ${mins}min"
+            else
+                five_hour_display="resetting..."
+            fi
+        else
+            five_hour_display="?"
+        fi
+
+        # Format 7-day reset time (day + time)
+        seven_day_day=$(date -d "$seven_day_clean" "+%a" 2>/dev/null || date -jf "%Y-%m-%dT%H:%M:%S%z" "$seven_day_clean" "+%a" 2>/dev/null)
+        seven_day_time=$(date -d "$seven_day_clean" "+%H:%M" 2>/dev/null || date -jf "%Y-%m-%dT%H:%M:%S%z" "$seven_day_clean" "+%H:%M" 2>/dev/null)
+
+        if [ -n "$seven_day_day" ] && [ -n "$seven_day_time" ]; then
+            seven_day_display="${seven_day_day} ${seven_day_time}"
+        else
+            seven_day_display="?"
+        fi
+
+        reset_display="5h:${five_hour_display} 7d:${seven_day_display}"
+    fi
 fi
 
 # Export variables for oh-my-posh
@@ -117,6 +161,7 @@ export CLAUDE_GIT_STATUS="$git_status"
 export CLAUDE_STYLE="$style"
 export CLAUDE_CONTEXT="$context_pct"
 export CLAUDE_USAGE="$usage_display"
+export CLAUDE_RESET="$reset_display"
 
 # Path to oh-my-posh config file
 config_file="$HOME/.claude/claude-statusline.omp.json"
@@ -130,5 +175,6 @@ env -i \
   CLAUDE_STYLE="$CLAUDE_STYLE" \
   CLAUDE_CONTEXT="$CLAUDE_CONTEXT" \
   CLAUDE_USAGE="$CLAUDE_USAGE" \
+  CLAUDE_RESET="$CLAUDE_RESET" \
   PATH="$PATH" \
   oh-my-posh print primary --config "$config_file" --pwd "$cwd"

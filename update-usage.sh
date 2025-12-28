@@ -1,19 +1,10 @@
 #!/bin/bash
-# Background script to update Claude usage cache using ccusage
+# Background script to update Claude usage cache using ccusage and Pro usage API
 
 cache_file="$HOME/.claude/.usage_cache"
-config_file="$HOME/.claude/usage-limits.conf"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Load configuration
-if [ -f "$config_file" ]; then
-    source "$config_file"
-else
-    # Default limits if config doesn't exist
-    FIVE_HOUR_LIMIT=40000000
-    WEEKLY_LIMIT=100000000
-fi
-
-# Get current 5-hour session usage from ccusage
+# Get current session usage from ccusage (total tokens only)
 session_data=$(npx ccusage blocks --active --json 2>/dev/null)
 if [ $? -ne 0 ]; then
     # ccusage failed, don't modify cache
@@ -23,31 +14,54 @@ fi
 # Extract total tokens for active session
 session_tokens=$(echo "$session_data" | jq -r '.blocks[0].totalTokens // 0' 2>/dev/null)
 
-# Get current weekly usage from ccusage
-weekly_data=$(npx ccusage weekly --json 2>/dev/null)
-if [ $? -ne 0 ]; then
-    # ccusage failed, don't modify cache
-    exit 0
-fi
-
-# Extract total tokens for current week (last entry in weekly array)
-weekly_tokens=$(echo "$weekly_data" | jq -r '.weekly[-1].totalTokens // 0' 2>/dev/null)
-
-# Calculate percentages
-if command -v bc >/dev/null 2>&1; then
-    session_pct=$(echo "scale=0; $session_tokens * 100 / $FIVE_HOUR_LIMIT" | bc)
-    weekly_pct=$(echo "scale=0; $weekly_tokens * 100 / $WEEKLY_LIMIT" | bc)
-else
-    session_pct=$(awk "BEGIN {printf \"%.0f\", $session_tokens * 100 / $FIVE_HOUR_LIMIT}")
-    weekly_pct=$(awk "BEGIN {printf \"%.0f\", $weekly_tokens * 100 / $WEEKLY_LIMIT}")
-fi
-
-# Validate we got valid numbers
-if ! [[ "$session_pct" =~ ^[0-9]+$ ]] || ! [[ "$weekly_pct" =~ ^[0-9]+$ ]]; then
+# Validate we got a valid number
+if ! [[ "$session_tokens" =~ ^[0-9]+$ ]]; then
     # Invalid data, don't modify cache
     exit 0
 fi
 
-# Write to cache (format: session_pct:weekly_pct:session_tokens:weekly_tokens:five_hour_limit:weekly_limit)
+# Get Claude Pro usage from web API (if available)
+pro_five_hour_pct=""
+pro_seven_day_pct=""
+pro_five_hour_resets=""
+pro_seven_day_resets=""
+
+if [ -f "$script_dir/fetch-pro-usage.sh" ]; then
+    # Try to fetch Pro usage data
+    pro_data=$(bash "$script_dir/fetch-pro-usage.sh" 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$pro_data" ]; then
+        # Parse format: five_hour_pct|seven_day_pct|five_hour_resets|seven_day_resets
+        pro_five_hour_pct=$(echo "$pro_data" | cut -d'|' -f1)
+        pro_seven_day_pct=$(echo "$pro_data" | cut -d'|' -f2)
+        pro_five_hour_resets=$(echo "$pro_data" | cut -d'|' -f3)
+        pro_seven_day_resets=$(echo "$pro_data" | cut -d'|' -f4)
+    fi
+fi
+
+# Write to cache in JSON format for clarity
 mkdir -p "$(dirname "$cache_file")"
-echo "${session_pct}:${weekly_pct}:${session_tokens}:${weekly_tokens}:${FIVE_HOUR_LIMIT}:${WEEKLY_LIMIT}" > "$cache_file"
+
+# Build Pro JSON object with reset times if available
+if [ -n "$pro_five_hour_pct" ]; then
+    pro_json=$(cat <<JSON_PRO
+  "pro": {
+    "five_hour_pct": ${pro_five_hour_pct},
+    "five_hour_resets_at": "${pro_five_hour_resets}",
+    "seven_day_pct": ${pro_seven_day_pct},
+    "seven_day_resets_at": "${pro_seven_day_resets}"
+  },
+JSON_PRO
+)
+else
+    pro_json='  "pro": null,'
+fi
+
+cat > "$cache_file" <<EOF
+{
+  "code": {
+    "session_tokens": ${session_tokens}
+  },
+${pro_json}
+  "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+EOF
