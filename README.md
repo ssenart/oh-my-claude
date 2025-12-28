@@ -2,66 +2,125 @@
 
 A fully customized status line for Claude Code featuring:
 - 🎨 Oh-my-posh powered theming with powerline separators
-- 📊 Automatic token usage tracking (5-hour & weekly limits)
+- 📊 Automatic token usage tracking (Code session + Pro web usage)
 - 🔄 Advanced git status with staging, working changes, and upstream tracking
 - 💾 Context window usage monitoring
-- ⚡ Non-blocking background updates
+- ⚡ Non-blocking background updates with JSON caching
+- 🕐 Reset time countdowns for Pro usage limits
 
-## Quick Start
+## Installation
 
-Your status line is already configured and running! It displays:
+### Quick Install
 
-```
- path  branch-with-status 󰍛 XX%  5h:XX% (XM/YM) W:XX% (XM/YM) 󰯉 Model
-```
-
-## Files Overview
-
-| File | Description |
-|------|-------------|
-| `statusline.sh` | Main script that renders the status line |
-| `claude-statusline.omp.json` | Oh-my-posh theme configuration |
-| `update-usage.sh` | Background script for usage tracking |
-| `usage-limits.conf` | **EDIT THIS** - Your subscription token limits |
-| `.usage_cache` | Auto-generated cache (don't edit) |
-| `docs/STATUS_LINE_DOCUMENTATION.md` | Complete technical documentation |
-| `docs/STATUS_LINE_QUICK_REFERENCE.md` | Common operations and commands |
-| `docs/EXAMPLES.md` | Visual examples of all status line states |
-| `docs/INDEX.md` | Documentation index and navigation guide |
-
-## 📝 Important: Set Your Token Limits
-
-Edit `~/.claude/usage-limits.conf` to match your subscription:
+Run the installation script from the repository root:
 
 ```bash
-FIVE_HOUR_LIMIT=16000000   # Your 5-hour limit in tokens
-WEEKLY_LIMIT=72000000      # Your weekly limit in tokens
+bash install.sh
 ```
 
-Run `/usage` in Claude Code to see your actual limits, then update the config file.
+This will:
+- ✅ Check for required dependencies (oh-my-posh, jq, git, npx)
+- ✅ Install all scripts to `~/.claude/oh-my-claude/`
+- ✅ Backup and update your `~/.claude/settings.json`
+- ✅ Create `.env` template for API credentials
+- ✅ Make all scripts executable
+
+### After Installation
+
+1. **Configure credentials** (edit `~/.claude/oh-my-claude/.env`):
+   ```bash
+   nano ~/.claude/oh-my-claude/.env
+   ```
+
+2. **For Code usage tracking** (required):
+   - Get OAuth token from: https://console.anthropic.com/settings/keys
+   - Add as `CLAUDE_CODE_OAUTH_TOKEN` in `.env`
+
+3. **For Pro usage tracking** (optional):
+   - See `docs/PRO-USAGE-SETUP.md` for detailed setup
+   - Requires `CLAUDE_SESSION_KEY` and `CLAUDE_ORG_ID`
+
+## Status Line Display
+
+Your status line will display:
+
+```
+ path  branch 󰍛 45% # 14.3M 󰓅 5h:73% 7d:24% 󰔛 5h:3h7min 7d:Thu09:59 󰯉 Model
+```
+
+Segments (left to right):
+1. **Path** - Current directory (orange)
+2. **Git** - Branch and status (yellow, dynamic colors)
+3. **Context** - Window usage percentage (teal)
+4. **Code** - Session tokens (cyan)
+5. **Pro** - 5h/7d usage percentages (pink)
+6. **Reset** - Time until limits reset (purple)
+7. **Model** - Current AI model (blue)
+
+## Project Structure
+
+```
+oh-my-claude/
+├── install.sh                    # Installation script
+├── src/                          # Source files
+│   ├── statusline.sh             # Main status line script
+│   ├── update-usage.sh           # Background usage updater
+│   ├── fetch-code-usage.sh       # Code session token fetcher
+│   ├── fetch-pro-usage.sh        # Pro usage fetcher
+│   └── claude-statusline.omp.json # Oh-my-posh theme
+├── docs/                         # Documentation
+│   ├── PRO-USAGE-SETUP.md        # Pro usage setup guide
+│   ├── STATUS_LINE_DOCUMENTATION.md # Technical reference
+│   ├── STATUS_LINE_QUICK_REFERENCE.md # Common operations
+│   ├── EXAMPLES.md               # Visual examples
+│   ├── INDEX.md                  # Documentation index
+│   └── CLAUDE.md                 # Architecture guide
+├── README.md                     # This file
+└── CHANGELOG.md                  # Version history
+```
+
+**Installed files** (in `~/.claude/oh-my-claude/`):
+- All scripts from `src/`
+- `.env` - Your API credentials
+- `.usage_cache` - Auto-generated cache (JSON format)
 
 ## Common Tasks
 
 ### Update Usage Data
 ```bash
-bash ~/.claude/update-usage.sh
+bash ~/.claude/oh-my-claude/update-usage.sh
+```
+
+### View Current Usage Cache
+```bash
+cat ~/.claude/oh-my-claude/.usage_cache | jq .
+```
+
+### Test Code Usage Fetcher
+```bash
+bash ~/.claude/oh-my-claude/fetch-code-usage.sh --debug
+```
+
+### Test Pro Usage Fetcher
+```bash
+bash ~/.claude/oh-my-claude/fetch-pro-usage.sh --debug
 ```
 
 ### Change How Often Usage Updates
-Edit `statusline.sh` and change:
+Edit `~/.claude/oh-my-claude/statusline.sh` and change:
 ```bash
 cache_timeout=60  # Seconds (default: 60)
 ```
 
 ### Test the Status Line
 ```bash
-echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"output_style":{"name":"markdown"},"context_window":{"current_usage":{"input_tokens":1000},"context_window_size":200000}}' | bash ~/.claude/statusline.sh
+echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"output_style":{"name":"markdown"},"context_window":{"current_usage":{"input_tokens":1000},"context_window_size":200000}}' | bash ~/.claude/oh-my-claude/statusline.sh
 ```
 
 ## Customization
 
-- **Colors**: Edit `claude-statusline.omp.json` → change `background` values
-- **Icons**: Edit `claude-statusline.omp.json` → change `template` values
+- **Colors**: Edit `~/.claude/oh-my-claude/claude-statusline.omp.json` → change `background` values
+- **Icons**: Edit `~/.claude/oh-my-claude/claude-statusline.omp.json` → change `template` values
 - **Segment order**: Rearrange `segments` array in `claude-statusline.omp.json`
 - **Add segments**: See `docs/STATUS_LINE_DOCUMENTATION.md` for examples
 
@@ -75,8 +134,10 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 | `` | Modified files in git |
 | `↑` | Commits ahead of remote |
 | `↓` | Commits behind remote |
-| `󰍛` | Memory/context usage indicator |
-| `` | Usage statistics indicator |
+| `󰍛` | Context usage indicator (microchip) |
+| `#` | Code token count indicator |
+| `󰓅` | Pro usage gauge indicator |
+| `󰔛` | Reset timer indicator |
 | `󰯉` | Model indicator |
 
 ## How It Works
@@ -84,14 +145,15 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 1. **Claude Code** calls `statusline.sh` on every refresh
 2. **statusline.sh**:
    - Extracts data (model, directory, context, git status)
-   - Checks usage cache (reads immediately, no waiting)
+   - Reads usage cache (JSON format, instant, no blocking)
    - If cache is old (>60s), triggers `update-usage.sh` in background
+   - Exports environment variables for oh-my-posh
    - Passes data to oh-my-posh
-3. **oh-my-posh** renders the colored segments
+3. **oh-my-posh** renders the colored powerline segments
 4. **update-usage.sh** (background, every 60s):
-   - Runs `npx ccusage` to get token usage
-   - Calculates percentages based on your limits
-   - Updates `.usage_cache`
+   - Calls `fetch-code-usage.sh` for session token count
+   - Calls `fetch-pro-usage.sh` for Pro usage percentages and reset times
+   - Writes JSON cache with timestamps
 
 ## Performance
 
