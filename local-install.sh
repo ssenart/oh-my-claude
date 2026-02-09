@@ -67,6 +67,7 @@ echo ""
 
 # Copy scripts and VERSION file
 echo "Copying scripts..."
+cp "$SCRIPT_DIR/src/common.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/statusline.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/update-usage.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/src/fetch-code-usage.sh" "$INSTALL_DIR/"

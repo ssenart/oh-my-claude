@@ -1,0 +1,40 @@
+# oh-my-claude - Git attributes for cross-platform compatibility
+# Ensures proper line endings between Windows and Linux
+
+# Auto-detect text files and normalize line endings to LF on checkin
+* text=auto
+
+# Shell scripts must use LF (critical for Linux/macOS execution)
+*.sh text eol=lf
+
+# Configuration and data files
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Documentation
+CHANGELOG text eol=lf
+CHANGELOG.md text eol=lf
+README text eol=lf
+README.md text eol=lf
+LICENSE text eol=lf
+VERSION text eol=lf
+
+# Installer scripts (no extension)
+install.sh text eol=lf
+local-install.sh text eol=lf
+bump-version.sh text eol=lf
+
+# Images (binary files)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.tgz binary

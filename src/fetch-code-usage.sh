@@ -2,16 +2,13 @@
 # Fetch Claude Code session usage using ccusage
 # Uses npx ccusage - no Node.js global install required
 
-# Get script directory and version
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Check same directory first (installed), then parent (development)
-VERSION=$(cat "$script_dir/VERSION" 2>/dev/null || cat "$script_dir/../VERSION" 2>/dev/null || echo "unknown")
+# Load common functions
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# Handle version flag
-if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
-    echo "oh-my-claude fetch-code-usage.sh version $VERSION"
-    exit 0
-fi
+# Get script directory and version
+script_dir=$(get_script_dir)
+VERSION=$(get_version "$script_dir")
+handle_version_flag "$1" "$VERSION"
 
 # Check for required tools
 if ! command -v jq >/dev/null 2>&1; then

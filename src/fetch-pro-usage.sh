@@ -2,16 +2,13 @@
 # Fetch Claude Pro usage data using OAuth credentials
 # Uses curl and jq - no Node.js dependencies
 
-# Get script directory and version
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Check same directory first (installed), then parent (development)
-VERSION=$(cat "$script_dir/VERSION" 2>/dev/null || cat "$script_dir/../VERSION" 2>/dev/null || echo "unknown")
+# Load common functions
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# Handle version flag
-if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
-    echo "oh-my-claude fetch-pro-usage.sh version $VERSION"
-    exit 0
-fi
+# Get script directory and version
+script_dir=$(get_script_dir)
+VERSION=$(get_version "$script_dir")
+handle_version_flag "$1" "$VERSION"
 
 # OAuth credentials path
 CREDS_PATH="${HOME}/.claude/.credentials.json"

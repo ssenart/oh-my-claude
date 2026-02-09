@@ -77,25 +77,36 @@ Your status line displays information-rich segments with powerline separators. S
 oh-my-claude/
 ├── install.sh                    # Web installer (downloads from GitHub)
 ├── local-install.sh              # Local installer (for development)
+├── run-tests.sh                  # Test runner (bats-core)
+├── .gitattributes                # Force LF line endings (cross-platform)
 ├── src/                          # Source files
+│   ├── common.sh                 # Shared utility functions
 │   ├── statusline.sh             # Main status line script
 │   ├── update-usage.sh           # Background usage updater
 │   ├── fetch-code-usage.sh       # Code session token fetcher
 │   ├── fetch-pro-usage.sh        # Pro usage fetcher
 │   └── claude-statusline.omp.json # Oh-my-posh theme
+├── tests/                        # Unit tests (bats-core)
+│   ├── README.md                 # Testing guide
+│   ├── common.bats               # Tests for common.sh
+│   ├── statusline.bats           # Tests for statusline.sh
+│   ├── fetch-code-usage.bats     # Tests for fetch-code-usage.sh
+│   ├── fetch-pro-usage.bats      # Tests for fetch-pro-usage.sh
+│   └── update-usage.bats         # Tests for update-usage.sh
 ├── docs/                         # Documentation
 │   ├── PRO-USAGE-SETUP.md        # Pro usage setup guide
 │   ├── STATUS_LINE_DOCUMENTATION.md # Technical reference
 │   ├── STATUS_LINE_QUICK_REFERENCE.md # Common operations
 │   ├── EXAMPLES.md               # Visual examples
 │   ├── INDEX.md                  # Documentation index
-│   └── CLAUDE.md                 # Architecture guide
+│   └── DEVELOPER_GUIDE.md        # Developer guide & architecture
 ├── README.md                     # This file
-└── CHANGELOG.md                  # Version history
+├── CHANGELOG.md                  # Version history
+└── VERSION                       # Current version number
 ```
 
 **Installed files** (in `~/.claude/oh-my-claude/`):
-- All scripts from `src/`
+- All scripts from `src/` (including common.sh)
 - `.usage_cache` - Auto-generated cache (JSON format)
 
 ## Common Tasks
@@ -274,7 +285,38 @@ If you need to modify the status line:
 ---
 
 **Created**: December 2024
-**Version**: 1.7.0
+**Version**: 1.9.0
 **Tools**: oh-my-posh, ccusage, bash
 
 For version history and detailed changes, see [CHANGELOG.md](CHANGELOG.md).
+
+## Development
+
+### Running Tests
+
+Install bats-core:
+```bash
+# Ubuntu/Debian
+sudo apt install bats
+
+# macOS
+brew install bats-core
+
+# npm (cross-platform)
+npm install -g bats
+```
+
+Run tests:
+```bash
+./run-tests.sh
+```
+
+See [tests/README.md](tests/README.md) for detailed testing information.
+
+### Code Quality
+
+- ✅ **27 unit tests** with bats-core
+- ✅ **Cross-platform** compatibility (Linux, macOS, Windows Git Bash)
+- ✅ **Shared library** (common.sh) for code reuse
+- ✅ **No bc dependency** - uses awk for better portability
+- ✅ **LF line endings** enforced via .gitattributes

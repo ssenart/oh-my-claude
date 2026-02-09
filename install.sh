@@ -107,6 +107,7 @@ download_all_files() {
     echo "Downloading from GitHub..."
 
     # Download each file
+    download_file "$base_url/src/common.sh" "$temp_dir/common.sh" || failed=1
     download_file "$base_url/src/statusline.sh" "$temp_dir/statusline.sh" || failed=1
     download_file "$base_url/src/update-usage.sh" "$temp_dir/update-usage.sh" || failed=1
     download_file "$base_url/src/fetch-code-usage.sh" "$temp_dir/fetch-code-usage.sh" || failed=1
@@ -129,7 +130,7 @@ download_all_files() {
 
 # Verify all downloads completed successfully
 verify_downloads() {
-    local required_files=("statusline.sh" "update-usage.sh" "fetch-code-usage.sh" "fetch-pro-usage.sh" "claude-statusline.omp.json" "VERSION")
+    local required_files=("common.sh" "statusline.sh" "update-usage.sh" "fetch-code-usage.sh" "fetch-pro-usage.sh" "claude-statusline.omp.json" "VERSION")
 
     for file in "${required_files[@]}"; do
         if [ ! -f "$temp_dir/$file" ] || [ ! -s "$temp_dir/$file" ]; then
@@ -200,6 +201,7 @@ install_files() {
     mkdir -p "$INSTALL_DIR"
 
     # Copy all files from temp to installation directory
+    cp "$temp_dir/common.sh" "$INSTALL_DIR/"
     cp "$temp_dir/statusline.sh" "$INSTALL_DIR/"
     cp "$temp_dir/update-usage.sh" "$INSTALL_DIR/"
     cp "$temp_dir/fetch-code-usage.sh" "$INSTALL_DIR/"

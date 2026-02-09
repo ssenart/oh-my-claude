@@ -1,6 +1,75 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.8.0 - Current (2024-12-29)
+## Version 1.9.0 - Current (2026-02-09)
+
+### Major Improvements
+- **Code Refactoring**: Reduced codebase by 37 lines (8.2%) with significant improvements
+- **Shared Library**: New `common.sh` for code reuse across all scripts
+- **Cross-Platform**: Fixed line ending issues for Linux compatibility
+- **Testing Framework**: Comprehensive unit tests with bats-core (27 tests)
+- **Performance**: Removed bc dependency, optimized cache reads
+
+### Added
+- **`src/common.sh`** - Shared utility functions (38 lines)
+  - `get_script_dir()` - Get script directory
+  - `get_version()` - Read VERSION file
+  - `handle_version_flag()` - Standard version flag handling
+  - `get_file_mtime()` - Cross-platform file modification time
+  - `parse_date()` - ISO 8601 date parsing
+  - `format_date()` - Cross-platform date formatting
+- **`tests/`** directory - Unit test suite with bats-core
+  - `tests/common.bats` - Tests for common.sh (10 tests)
+  - `tests/statusline.bats` - Tests for statusline.sh (6 tests)
+  - `tests/fetch-code-usage.bats` - Tests for fetch-code-usage.sh (4 tests)
+  - `tests/fetch-pro-usage.bats` - Tests for fetch-pro-usage.sh (4 tests)
+  - `tests/update-usage.bats` - Tests for update-usage.sh (3 tests)
+  - `tests/README.md` - Testing documentation
+- **`run-tests.sh`** - Convenient test runner script
+- **`.gitattributes`** - Force LF line endings for cross-platform compatibility
+
+### Changed
+- **statusline.sh**: 193 → 130 lines (-32.6%)
+  - Removed unused git parsing (oh-my-posh handles this natively)
+  - Removed unused variables (CLAUDE_DIR, CLAUDE_GIT_BRANCH, CLAUDE_GIT_STATUS, CLAUDE_STYLE)
+  - Consolidated jq reads (single cache file read)
+  - Simplified math operations (awk only, removed bc dependency)
+  - Uses common.sh for shared functions
+- **update-usage.sh**: 75 → 71 lines
+  - Uses common.sh for VERSION handling
+- **fetch-code-usage.sh**: 66 → 62 lines
+  - Uses common.sh for VERSION handling
+- **fetch-pro-usage.sh**: 118 → 114 lines
+  - Uses common.sh for VERSION handling
+- **install.sh** - Now copies common.sh (critical fix)
+- **local-install.sh** - Now copies common.sh (critical fix)
+- **.gitignore** - Added test artifacts exclusions
+
+### Fixed
+- **Line endings**: All files converted from CRLF to LF for Linux compatibility
+  - Fixed `$'\r' : commande introuvable` errors on Linux
+  - Added `.gitattributes` to enforce LF in repository
+- **Missing dependency**: Installers now copy `common.sh` (was missing after refactoring)
+- **Redundant code**: Removed duplicate cache file checks in statusline.sh
+- **Unused exports**: Removed 4 unused environment variables
+
+### Performance Improvements
+- **No bc dependency**: All math using awk (more portable)
+- **Single cache read**: Read cache JSON once instead of 5 separate jq calls
+- **No git commands**: Removed redundant git status/branch calls
+- **Faster execution**: ~50ms render time maintained, less overhead
+
+### Development
+- **Test coverage**: 22 passing tests + 5 skipped (expected)
+- **Code quality**: Better organized, more maintainable
+- **Documentation**: Updated README, CHANGELOG, and test docs
+- **Best practices**: Follows modern Bash scripting standards
+
+### Breaking Changes
+None - All changes are backward compatible
+
+---
+
+## Version 1.8.0 - (2024-12-29)
 
 ### Major Changes
 - **Web Installer**: Modern curl-based installation method
@@ -97,7 +166,7 @@
   - `docs/PRO-USAGE-SETUP.md` - Simplified to automatic setup
   - `docs/INSTALLATION.md` - Removed credential prompts
   - `docs/STATUS_LINE_DOCUMENTATION.md` - Updated OAuth credentials info
-  - `docs/CLAUDE.md` - Updated architecture descriptions
+  - `docs/DEVELOPER_GUIDE.md` - Updated architecture descriptions
   - `docs/INDEX.md` - Updated file structure
   - `docs/STATUS_LINE_QUICK_REFERENCE.md` - Updated file references
 
@@ -162,7 +231,7 @@
   - `INSTALLATION.md` - Comprehensive installation guide
   - `PRO-USAGE-SETUP.md` - Pro usage tracking setup guide
   - `INDEX.md` - Documentation navigation index
-  - `CLAUDE.md` - Architecture guide for developers
+  - `DEVELOPER_GUIDE.md` - Architecture guide for developers
   - `README.md` - Overview and getting started
   - `CHANGELOG.md` - This file
 

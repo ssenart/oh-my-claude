@@ -14,7 +14,7 @@ Complete guide to the custom Claude Code status line implementation.
 | **STATUS_LINE_QUICK_REFERENCE.md** | Common operations | Day-to-day usage, quick commands |
 | **STATUS_LINE_DOCUMENTATION.md** | Complete technical reference | Deep customization, understanding internals |
 | **EXAMPLES.md** | Visual examples of all states | Understanding what you're seeing |
-| **CLAUDE.md** | Architecture guide | Understanding the codebase structure |
+| **DEVELOPER_GUIDE.md** | Developer guide & architecture | Understanding the codebase structure |
 | **../CHANGELOG.md** | Version history and changes | Tracking what's been implemented |
 | **INDEX.md** | This file - documentation map | Finding the right document |
 
@@ -68,7 +68,7 @@ Complete guide to the custom Claude Code status line implementation.
 - **Cache timeout**: STATUS_LINE_QUICK_REFERENCE.md
 
 ### Technical Details
-- **Architecture**: STATUS_LINE_DOCUMENTATION.md, ../CLAUDE.md
+- **Architecture**: STATUS_LINE_DOCUMENTATION.md, DEVELOPER_GUIDE.md
 - **How it works**: STATUS_LINE_DOCUMENTATION.md, ../README.md
 - **Performance**: STATUS_LINE_DOCUMENTATION.md, ../CHANGELOG.md
 - **Dependencies**: ../README.md, STATUS_LINE_DOCUMENTATION.md

@@ -2,3 +2,8 @@
 .cache/
 *.stackdump
 usage-limits.conf
+
+# Test artifacts
+tests/.bats/
+*.tap
+src/.usage_cache
