@@ -79,7 +79,7 @@ echo -e "${GREEN}✓ Updated VERSION file${NC}"
 # Update README.md
 if [ -f "$README_FILE" ]; then
     # Update the version line (e.g., "**Version**: 1.6")
-    sed -i "s/\*\*Version\*\*: [0-9]\+\.[0-9]\+/\*\*Version\*\*: ${NEW_VERSION%.*}/" "$README_FILE"
+    sed -i "s/\*\*Version\*\*: [0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?/\*\*Version\*\*: ${NEW_VERSION}/" "$README_FILE"
     echo -e "${GREEN}✓ Updated README.md${NC}"
 fi
 

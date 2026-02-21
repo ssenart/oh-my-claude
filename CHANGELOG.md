@@ -1,6 +1,18 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.9.0 - Current (2026-02-09)
+## Version 1.9.1 - Current (2026-02-21)
+
+### Fixed
+- **`src/statusline.sh`**: Pass `HOME` to `oh-my-posh` in `env -i` call
+  - `env -i` stripped `HOME`, causing oh-my-posh to fall back to the current
+    working directory for its cache instead of `~/.cache/oh-my-posh/`
+  - Empty `shell.UUID.omp.cache` files were accumulating in whatever project
+    directory was open in the IDE
+  - Adding `HOME="$HOME"` ensures cache always lands in `~/.cache/oh-my-posh/`
+
+---
+
+## Version 1.9.0 - (2026-02-09)
 
 ### Major Improvements
 - **Code Refactoring**: Reduced codebase by 37 lines (8.2%) with significant improvements

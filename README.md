@@ -285,7 +285,7 @@ If you need to modify the status line:
 ---
 
 **Created**: December 2024
-**Version**: 1.9.0
+**Version**: 1.9.1
 **Tools**: oh-my-posh, ccusage, bash
 
 For version history and detailed changes, see [CHANGELOG.md](CHANGELOG.md).

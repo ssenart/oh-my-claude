@@ -121,6 +121,7 @@ config_file="$script_dir/claude-statusline.omp.json"
 
 # Use oh-my-posh to render the status line with clean environment
 env -i \
+  HOME="$HOME" \
   CLAUDE_MODEL="$model" \
   CLAUDE_CONTEXT="$context_pct" \
   CLAUDE_CODE_USAGE="$code_usage_display" \
