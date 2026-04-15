@@ -10,35 +10,39 @@ script_dir=$(get_script_dir)
 VERSION=$(get_version "$script_dir")
 handle_version_flag "$1" "$VERSION"
 
-# OAuth credentials path
-CREDS_PATH="${HOME}/.claude/.credentials.json"
-
 # Check for required tools
 if ! command -v curl >/dev/null 2>&1; then
     echo "ERROR: curl not found" >&2
     exit 1
 fi
 
-# Check if credentials file exists
-if [ ! -f "$CREDS_PATH" ]; then
-    echo "ERROR: OAuth credentials file not found at $CREDS_PATH" >&2
+# Extract access token from macOS keychain (preferred) or fall back to credentials file
+KEYCHAIN_SERVICE="Claude Code-credentials"
+CREDS_PATH="${HOME}/.claude/.credentials.json"
+
+if security find-generic-password -s "$KEYCHAIN_SERVICE" -w &>/dev/null; then
+    # Read from keychain — token never written to disk
+    if command -v jq &>/dev/null; then
+        ACCESS_TOKEN=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null | jq -r '.claudeAiOauth.accessToken' 2>/dev/null)
+    else
+        ACCESS_TOKEN=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null | grep -o '"accessToken":"[^"]*"' | sed 's/"accessToken":"\([^"]*\)"/\1/')
+    fi
+elif [ -f "$CREDS_PATH" ]; then
+    # Fall back to credentials file if keychain entry is absent
+    if command -v jq &>/dev/null; then
+        ACCESS_TOKEN=$(jq -r '.claudeAiOauth.accessToken' "$CREDS_PATH" 2>/dev/null)
+    else
+        ACCESS_TOKEN=$(grep -o '"accessToken":"[^"]*"' "$CREDS_PATH" | sed 's/"accessToken":"\([^"]*\)"/\1/')
+    fi
+else
+    echo "ERROR: No credentials found. Checked keychain ('$KEYCHAIN_SERVICE') and $CREDS_PATH" >&2
     echo "Please ensure Claude Code is authenticated." >&2
     exit 1
 fi
 
-# Extract access token from credentials file
-# Try using jq if available, otherwise fall back to grep/sed
-if command -v jq &> /dev/null; then
-    ACCESS_TOKEN=$(jq -r '.claudeAiOauth.accessToken' "$CREDS_PATH" 2>/dev/null)
-else
-    # Fallback: parse JSON with grep and sed
-    ACCESS_TOKEN=$(grep -o '"accessToken":"[^"]*"' "$CREDS_PATH" | sed 's/"accessToken":"\([^"]*\)"/\1/')
-fi
-
 # Verify we got a token
 if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
-    echo "ERROR: Could not extract access token from credentials file" >&2
-    echo "Verify: $CREDS_PATH contains OAuth data" >&2
+    echo "ERROR: Could not extract access token from credentials" >&2
     echo "Try re-authenticating with Claude Code." >&2
     exit 1
 fi
