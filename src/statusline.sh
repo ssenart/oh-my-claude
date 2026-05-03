@@ -80,9 +80,9 @@ fi
 # Format reset times display
 reset_display=""
 if [ -n "$pro_five_hour_resets" ] && [ -n "$pro_seven_day_resets" ]; then
-    # Parse reset time (remove milliseconds for compatibility)
-    five_hour_clean=$(echo "$pro_five_hour_resets" | sed 's/\.[0-9]*+/+/')
-    seven_day_clean=$(echo "$pro_seven_day_resets" | sed 's/\.[0-9]*+/+/')
+    # Parse reset time (remove milliseconds and normalize timezone for macOS compatibility)
+    five_hour_clean=$(echo "$pro_five_hour_resets" | sed 's/\.[0-9]*+/+/' | sed 's/+\([0-9][0-9]\):\([0-9][0-9]\)$/+\1\2/')
+    seven_day_clean=$(echo "$pro_seven_day_resets" | sed 's/\.[0-9]*+/+/' | sed 's/+\([0-9][0-9]\):\([0-9][0-9]\)$/+\1\2/')
 
     # Get current time and reset time in seconds since epoch
     now_sec=$(date +%s)
