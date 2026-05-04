@@ -20,12 +20,13 @@ fi
 KEYCHAIN_SERVICE="Claude Code-credentials"
 CREDS_PATH="${HOME}/.claude/.credentials.json"
 
-if security find-generic-password -s "$KEYCHAIN_SERVICE" -w &>/dev/null; then
+_keychain_json=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null)
+if [ -n "$_keychain_json" ]; then
     # Read from keychain — token never written to disk
     if command -v jq &>/dev/null; then
-        ACCESS_TOKEN=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null | jq -r '.claudeAiOauth.accessToken' 2>/dev/null)
+        ACCESS_TOKEN=$(printf '%s' "$_keychain_json" | jq -r '.claudeAiOauth.accessToken' 2>/dev/null)
     else
-        ACCESS_TOKEN=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null | grep -o '"accessToken":"[^"]*"' | sed 's/"accessToken":"\([^"]*\)"/\1/')
+        ACCESS_TOKEN=$(printf '%s' "$_keychain_json" | grep -o '"accessToken":"[^"]*"' | sed 's/"accessToken":"\([^"]*\)"/\1/')
     fi
 elif [ -f "$CREDS_PATH" ]; then
     # Fall back to credentials file if keychain entry is absent

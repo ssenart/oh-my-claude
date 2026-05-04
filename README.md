@@ -33,7 +33,7 @@ This will:
 - ✅ Backup and update your `~/.claude/settings.json`
 - ✅ Make all scripts executable
 
-Pro usage tracking is automatic - no credentials needed!
+Pro usage tracking is automatic — credentials are read from the macOS Keychain or `~/.claude/.credentials.json` (whichever is present). No manual setup needed.
 
 **Security Note**: The installer only writes to your home directory and never requests sudo access. You can review the script before running: [View install.sh](https://github.com/ssenart/oh-my-claude/blob/main/install.sh)
 
@@ -62,12 +62,12 @@ Your status line displays information-rich segments with powerline separators. S
 | # | Segment | Color | Description | Example |
 |---|---------|-------|-------------|---------|
 | 1 | **Path** | Orange | Current directory | `oh-my-claude` |
-| 2 | **Git** | Yellow* | Branch and status | `main ` |
-| 3 | **Context** | Teal | Window usage percentage | `󰍛 24.7%` |
+| 2 | **Git** | Yellow* | Branch and status | `main` |
+| 3 | **Context** | Teal | Window usage percentage | `24.7%` |
 | 4 | **Code** | Cyan | Session tokens (optional) | `# 14.3M` |
-| 5 | **Pro** | Pink | 5h/7d usage percentages (auto) | `󰓅 5h:90% 7d:27%` |
-| 6 | **Reset** | Purple | Time until limits reset (auto) | `󰔛 5h:2h1min 7d:Thu09:59` |
-| 7 | **Model** | Blue | Current AI model | `󰯉 Sonnet 4.5` |
+| 5 | **Pro** | Pink | 5h/7d usage percentages (auto) | `5h:90% 7d:27%` |
+| 6 | **Reset** | Purple | Time until limits reset (auto) | `5h:2h1min 7d:Thu09:59` |
+| 7 | **Model** | Blue | Current AI model | `Sonnet 4.5` |
 
 *Git segment color changes dynamically based on repository status (clean, dirty, ahead, behind, diverged)
 
@@ -159,19 +159,21 @@ echo '{"model":{"display_name":"Test"},"workspace":{"current_dir":"'$PWD'"},"out
 
 ## Status Indicators
 
-| Symbol | Meaning |
-|--------|---------|
-| `` | Path/directory indicator |
-| `` | Git upstream status indicator |
-| `` | Staged files in git |
-| `` | Modified files in git |
+> **Note**: icons below are [Nerd Font](https://www.nerdfonts.com/) glyphs and require a Nerd Font installed in your terminal to display. See the screenshot at the top for how they appear in practice.
+
+| Icon | Meaning |
+|------|---------|
+| folder glyph | Path/directory indicator |
+| upstream arrow glyph | Git upstream status indicator |
+| staged-files glyph | Staged files in git |
+| modified-files glyph | Modified files in git |
 | `↑` | Commits ahead of remote |
 | `↓` | Commits behind remote |
-| `󰍛` | Context usage indicator (microchip) |
+| microchip glyph (U+F035B) | Context usage indicator |
 | `#` | Code token count indicator |
-| `󰓅` | Pro usage gauge indicator |
-| `󰔛` | Reset timer indicator |
-| `󰯉` | Model indicator |
+| gauge glyph (U+F04C5) | Pro usage gauge indicator |
+| timer glyph (U+F051B) | Reset timer indicator |
+| robot glyph (U+F0BC9) | Model indicator |
 
 ## How It Works
 
@@ -285,7 +287,7 @@ If you need to modify the status line:
 ---
 
 **Created**: December 2024
-**Version**: 1.9.1
+**Version**: 1.9.2
 **Tools**: oh-my-posh, ccusage, bash
 
 For version history and detailed changes, see [CHANGELOG.md](CHANGELOG.md).

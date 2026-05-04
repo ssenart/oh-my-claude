@@ -31,14 +31,16 @@ setup() {
     [[ "$output" =~ "curl not found" ]]
 }
 
-@test "fetch-pro-usage.sh checks for credentials file" {
-    # Temporarily rename credentials if it exists
+@test "fetch-pro-usage.sh reports error when no credentials are found" {
     if [ -f ~/.claude/.credentials.json ]; then
         skip "Credentials file exists - cannot test missing credentials"
+    fi
+    if security find-generic-password -s "Claude Code-credentials" -w &>/dev/null 2>&1; then
+        skip "Keychain entry exists - cannot test missing credentials"
     fi
 
     run bash "$FETCH_PRO"
 
     [ "$status" -ne 0 ]
-    [[ "$output" =~ "credentials file not found" ]]
+    [[ "$output" =~ "No credentials found" ]]
 }

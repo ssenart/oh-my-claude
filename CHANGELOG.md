@@ -1,6 +1,30 @@
 # Changelog - Claude Code Custom Status Line
 
-## Version 1.9.1 - Current (2026-02-21)
+## Version 1.9.2 - Current (2026-05-04)
+
+Thanks to [@alexj](https://github.com/alexj) for [PR #1](https://github.com/ssenart/oh-my-claude/pull/1) which contributed the macOS Keychain support and timezone fix in this release.
+
+### Added
+- **`src/fetch-pro-usage.sh`**: macOS Keychain support for OAuth credentials
+  - Reads the access token from the macOS Keychain (`Claude Code-credentials` service) as the primary source
+  - Falls back to `~/.claude/.credentials.json` for Linux users or machines without a Keychain entry
+  - Resolves Pro usage display being blank on macOS when Claude Code stores credentials in the Keychain rather than the file
+
+### Fixed
+- **`src/fetch-pro-usage.sh`**: Eliminated double `security find-generic-password` invocation
+  - Keychain was previously read twice (probe + read), introducing a minor TOCTOU and unnecessary overhead
+  - Now captured once into `_keychain_json` and reused for token extraction
+- **`src/statusline.sh`**: Normalize timezone offset format for macOS `date` compatibility
+  - API timestamps use `+HH:MM` format; macOS BSD `date -j -f "%z"` requires `+HHMM` (no colon)
+  - Added a `sed` pass to strip the colon, fixing reset time display on macOS
+- **`tests/fetch-pro-usage.bats`**: Updated stale test after error message change
+  - Renamed test to `"reports error when no credentials are found"`
+  - Added keychain skip guard so the test does not false-fail on authenticated macOS machines
+  - Updated expected error substring from `"credentials file not found"` to `"No credentials found"`
+
+---
+
+## Version 1.9.1 - (2026-02-21)
 
 ### Fixed
 - **`src/statusline.sh`**: Pass `HOME` to `oh-my-posh` in `env -i` call
